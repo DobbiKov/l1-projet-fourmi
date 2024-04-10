@@ -1,6 +1,6 @@
 CXX=clang++
 CXXFLAGS=-std=c++11 -Wall
-EXEC_FILES=main
+EXEC_FILES=test
 
 all: 
 
@@ -8,9 +8,10 @@ all:
 	$(CXX) $(CXXFLAGS) -c $<
 
 coord.o: coord.hpp
+test.o: coord.hpp
 
 
-main: main.o 
+test: test.o coord.o 
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
 clean:
