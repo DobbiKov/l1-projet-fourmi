@@ -1,6 +1,8 @@
 #include <stdexcept>
 #include <iostream>
 #include "coord.hpp"
+#include <random>
+
 
 using namespace std;
 
@@ -50,7 +52,7 @@ int EnsCoord::taille() const{
 }
 
 Coord EnsCoord::ieme(int n) const{
-    if(n >= taille())
+    if(n >= taille() || n < 0)
         throw invalid_argument("The argument n is out of range!");
     return coords[n];
 }
@@ -70,7 +72,29 @@ ostream& operator<<(ostream& out, EnsCoord ens){
     for(int i = 0; i < coords.size(); i++){
         out << coords[i];
         if(i < coords.size() - 1)
-            out << " ";
+            out << ", ";
     }
     return out;
+}
+
+EnsCoord voisines(Coord c){
+    EnsCoord ens = EnsCoord();
+    int l = c.getLine();
+    int col = c.getColumn();
+    for(int i = l-1; i <= l+1; i++){
+        if(i < 0 || i >= TAILLEGRILLE) continue;
+        for(int j = col-1; j <= col+1; j++){
+            if(j < 0 || j >= TAILLEGRILLE) continue;  
+            if(i == l && j == col) continue; 
+            ens.ajoute(Coord(i, j)); 
+        }
+    }
+    return ens;
+}
+
+Coord choixHasard(){
+    int n = TAILLEGRILLE;
+    int lig = rand() % (n);
+    int col = rand() % (n);
+    return Coord(lig, col);
 }

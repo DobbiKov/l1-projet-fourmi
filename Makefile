@@ -9,9 +9,10 @@ all:
 
 coord.o: coord.hpp
 test.o: coord.hpp
+outils.o: outils.hpp coord.hpp
 
 
-test: test.o coord.o 
+test: test.o coord.o outils.o
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
 clean:

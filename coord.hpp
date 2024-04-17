@@ -17,6 +17,7 @@ private:
     int column;
 };
 
+ostream& operator<<(ostream& out, Coord c);
 bool operator==(Coord c1, Coord c2);
 bool operator!=(Coord c1, Coord c2);
 
@@ -38,5 +39,9 @@ private:
 
     int position(Coord c) const;
 };
+ostream& operator<<(ostream& out, EnsCoord ens);
+
+EnsCoord voisines(Coord c);
+Coord choixHasard();
 
 #endif
