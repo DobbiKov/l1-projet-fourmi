@@ -2,6 +2,7 @@
 #include <iostream>
 #include <projet_fourmi/coord.hpp>
 #include <random>
+#include <time.h>
 
 
 using namespace std;
@@ -77,6 +78,12 @@ ostream& operator<<(ostream& out, EnsCoord ens){
     return out;
 }
 
+Coord EnsCoord::choixHasard() const{
+    srand (time(NULL));
+    int n = rand() % coords.size();
+    return coords[n];
+}
+
 EnsCoord voisines(Coord c){
     EnsCoord ens = EnsCoord();
     int l = c.getLine();
@@ -90,11 +97,4 @@ EnsCoord voisines(Coord c){
         }
     }
     return ens;
-}
-
-Coord choixHasard(){
-    int n = TAILLEGRILLE;
-    int lig = rand() % (n);
-    int col = rand() % (n);
-    return Coord(lig, col);
 }

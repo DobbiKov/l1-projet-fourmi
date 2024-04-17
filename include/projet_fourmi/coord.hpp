@@ -33,6 +33,7 @@ public:
     bool estVide() const;
     int taille() const;
     Coord ieme(int n) const;
+    Coord choixHasard() const;
 private:
     vector<Coord> coords;
     int coords_size;
@@ -42,6 +43,5 @@ private:
 ostream& operator<<(ostream& out, EnsCoord ens);
 
 EnsCoord voisines(Coord c);
-Coord choixHasard();
 
 #endif

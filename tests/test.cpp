@@ -171,16 +171,15 @@ TEST_CASE("voisines"){
 TEST_SUITE_END();
 TEST_SUITE_BEGIN("choixHasard");
 TEST_CASE("choixHasard"){
-    Coord c1 = choixHasard();
-    CHECK(c1.getColumn() >= 0);
-    CHECK(c1.getLine() >= 0);
-    CHECK(c1.getColumn() <= TAILLEGRILLE-1);
-    CHECK(c1.getLine() <= TAILLEGRILLE-1);
+    EnsCoord n2 = EnsCoord(vector<Coord>{{
+        Coord(5, 4), Coord(3, 4), Coord(6, 19), Coord(15, 8), Coord(1, 2)
+    }});
 
-    Coord c2 = choixHasard();
-    CHECK(c2.getColumn() >= 0);
-    CHECK(c2.getLine() >= 0);
-    CHECK(c2.getColumn() <= TAILLEGRILLE-1);
-    CHECK(c2.getLine() <= TAILLEGRILLE-1);
+    Coord c = n2.choixHasard();
+    cout << c << endl;
+    CHECK(n2.contient(c));
+
+    c = n2.choixHasard();
+    CHECK(n2.contient(c));
 }
 TEST_SUITE_END();
