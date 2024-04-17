@@ -1,11 +1,11 @@
 #include <stdexcept>
 #include <iostream>
 
-#include "coord.hpp"
-#include "outils.hpp"
+#include <projet_fourmi/outils.hpp>
+#include <projet_fourmi/coord.hpp>
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-#include "doctest.h"
+#include <lib/doctest.h>
 
 using namespace std;
 

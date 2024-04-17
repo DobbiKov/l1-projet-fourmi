@@ -1,6 +1,7 @@
-#include "outils.hpp"
+#include <projet_fourmi/outils.hpp>
 #include <vector>
-#include "coord.hpp"
+#include <projet_fourmi/coord.hpp>
+
 using namespace std;
 
 bool operator==(vector<Coord> v1, vector<Coord> v2){
