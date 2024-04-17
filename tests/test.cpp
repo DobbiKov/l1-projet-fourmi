@@ -181,5 +181,8 @@ TEST_CASE("choixHasard"){
 
     c = n2.choixHasard();
     CHECK(n2.contient(c));
+
+    EnsCoord n1 = EnsCoord();
+    CHECK_THROWS_AS(n1.choixHasard(), runtime_error);
 }
 TEST_SUITE_END();

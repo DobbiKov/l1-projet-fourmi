@@ -79,6 +79,8 @@ ostream& operator<<(ostream& out, EnsCoord ens){
 }
 
 Coord EnsCoord::choixHasard() const{
+    if(coords.size() == 0)
+        throw runtime_error("L'ensemble est vide!");
     srand (time(NULL));
     int n = rand() % coords.size();
     return coords[n];
