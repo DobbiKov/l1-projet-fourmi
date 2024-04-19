@@ -14,7 +14,7 @@ int Fourmi::getNum() const{
 }
 
 bool Fourmi::porteSucre() const{
-    return porteSucre;
+    return porte_sucre;
 }
 
 void Fourmi::prendSucre(){
