@@ -4,19 +4,23 @@
 #include <projet_fourmi/coord.hpp>
 #include <projet_fourmi/fourmi.hpp>
 
+const int AMOUNT_OF_SUGAR_TO_SET = 60;
+const float MAX_PHERO_SUGAR_INTENSITY = 5;
+
 using namespace std;
 
 class Place{
 private:
     int fourmi_id;
-    float phero_suagar;
+    float phero_sugar;
     float phero_nid;
     Coord coords;
 
     int sugar;
     bool has_nid;
+    bool is_alive;
 public: 
-    Place(Coord c):coords{c}, fourmi_id{-1}, phero_suagar{0}, phero_nid{0}, sugar{0}, has_nid{false} {}
+    Place(Coord c);
     Coord getCoords() const;
     float getPheroSugar() const;
     float getPheroNid() const;
@@ -29,15 +33,16 @@ public:
     void setSugar();
     void removeSugar();
     void setNid();
-    void setFourmi();
+    void setFourmi(Fourmi f);
     void removeFourmi();
     void setPheroNid(float intensity);
     void setPheroSugar();
     void decreasePheroSugar();
+
+    bool isEmpty() const;
 };
 
-void replaceFourmi(Fourmi f, Place from, Place to);
-bool isEmpty(Place p);
+void replaceFourmi(Fourmi& f, Place& from, Place& to);
 bool isTheClosestNid(Place p1, Place p2);
 
 #endif

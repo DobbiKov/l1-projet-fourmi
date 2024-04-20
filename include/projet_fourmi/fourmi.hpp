@@ -8,14 +8,18 @@ private:
     Coord coords;
     int num;
     bool porte_sucre;
+    bool is_alive;
 public: 
     Fourmi(Coord c, int id);
     Coord getCoords() const;
     int getNum() const;
+    bool isAlive() const;
     bool porteSucre() const;
     void prendSucre();
     void poseSucre();
     void deplace(Coord c);
 };
+
+vector<Fourmi> createListFourmis(EnsCoord ens);
 
 #endif
