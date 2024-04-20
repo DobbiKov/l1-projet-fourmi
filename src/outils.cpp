@@ -21,3 +21,12 @@ bool operator!=(vector<Coord> v1, vector<Coord> v2){
     }
     return false;
 }
+
+float val_abs(float num){
+    return (num >= 0) ? num : -num;
+}
+
+bool float_equal(float a, float b){
+    float epsilon = 1.e-10;
+    return val_abs(a - b) < epsilon;
+}

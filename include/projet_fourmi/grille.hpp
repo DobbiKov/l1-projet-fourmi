@@ -9,15 +9,18 @@ using namespace std;
 
 class Grille{
 private:
-    int h;
+    vector<Place> places;
 
 public:
     Grille();
-    Place loadPlace(Coord c) const;
-    void changePlace(Place p) const;
+    Place loadPlace(const Coord& c) const;
+    void changePlace(Place p);
     void decreasePheroSugar();
+    int getCoordIdx(const Coord& c) const;
+    vector<Place> getPlaces() const {return places;}
 };
 
+//TODO: 
 void setNid(Grille& g, EnsCoord ens);
 void setFourmis(Grille& g, vector<Fourmi> fourmis);
 Grille initializeGrille(vector<Fourmi> fourmis, EnsCoord sugar_coords, EnsCoord nid_coords);

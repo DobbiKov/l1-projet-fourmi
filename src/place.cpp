@@ -4,7 +4,7 @@
 
 using namespace std;
 
-Place::Place(Coord c):coords{c}, fourmi_id{-1}, phero_sugar{0}, phero_nid{0}, sugar{0}, has_nid{false} {}
+Place::Place(Coord c):fourmi_id{-1}, phero_sugar{0}, phero_nid{0}, coords{c}, sugar{0}, has_nid{false} {}
 
 Coord Place::getCoords() const{
     return coords;
@@ -40,7 +40,9 @@ void Place::setSugar(){
 void Place::removeSugar(){
     if(!containSugar())
         throw runtime_error("The place doesn't contain sugar!");
-    sugar = 0;
+    sugar -= AMOUT_OF_SUGAR_TO_REMOVE;
+    if(sugar < 0)
+        sugar = 0;
 }
 
 void Place::setNid(){
@@ -52,6 +54,8 @@ void Place::setNid(){
 void Place::setFourmi(Fourmi f){
     if(!isEmpty())
         throw runtime_error("The place isn't empty!");
+    if(f.getCoords() != getCoords())
+        throw invalid_argument("The ant isn't placed at these coordinates!");
     fourmi_id = f.getNum();
 }
 
@@ -70,7 +74,10 @@ void Place::setPheroSugar(){
 }
 
 void Place::decreasePheroSugar(){
-    phero_sugar--;
+    if(phero_sugar == 0) return;
+    phero_sugar -= AMOUT_OF_PHERO_SUGAR_TO_REMOVE;
+    if(phero_sugar < 0)
+        phero_sugar = 0;
 }
 
 bool Place::isEmpty() const{

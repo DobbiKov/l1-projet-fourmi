@@ -3,7 +3,7 @@
 
 using namespace std;
 
-Fourmi::Fourmi(Coord c, int id):coords{c}, num{id}, porte_sucre{false}{}
+Fourmi::Fourmi(Coord c, int id):coords{c}, num{id}, porte_sucre{false}, is_alive{true}{}
 
 Coord Fourmi::getCoords() const{
     return coords;
