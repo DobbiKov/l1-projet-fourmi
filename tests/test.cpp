@@ -383,4 +383,204 @@ TEST_CASE("Grille load and change place"){
     Place p1 = g.loadPlace(c);
     CHECK(p1.containNid());
 }
+
+TEST_CASE("Grille setNid"){
+    vector<Coord> nidCoords{{
+            Coord(3, 4),
+            Coord(3, 5),
+            Coord(4, 4),
+            Coord(4, 5)
+        }};
+    EnsCoord ens = EnsCoord(nidCoords);
+
+    Grille g = Grille();
+
+    for(Coord c: nidCoords){
+        CHECK( g.loadPlace(c).isEmpty() );
+        CHECK_FALSE( g.loadPlace(c).containNid() );
+        CHECK( g.loadPlace(c).getPheroNid() == 0 );
+    }
+    
+    setNid(g, ens);
+    
+    for(Coord c: nidCoords){
+        CHECK_FALSE( g.loadPlace(c).isEmpty() );
+        CHECK( g.loadPlace(c).containNid() );
+        CHECK( g.loadPlace(c).getPheroNid() == 1 );
+    }
+    CHECK_THROWS(setNid(g, ens));
+    CHECK_THROWS(setSugar(g, ens));
+}
+
+TEST_CASE("Grille setSugar"){
+    vector<Coord> sugarCoords{{
+            Coord(3, 4),
+            Coord(3, 5),
+            Coord(4, 4),
+            Coord(4, 5)
+        }};
+    EnsCoord ens = EnsCoord(sugarCoords);
+
+    Grille g = Grille();
+
+    for(Coord c: sugarCoords){
+        CHECK( g.loadPlace(c).isEmpty() );
+        CHECK_FALSE( g.loadPlace(c).containSugar() );
+    }
+    
+    setSugar(g, ens);
+    
+    for(Coord c: sugarCoords){
+        CHECK_FALSE( g.loadPlace(c).isEmpty() );
+        CHECK( g.loadPlace(c).containSugar() );
+    }
+    CHECK_THROWS(setNid(g, ens));
+    CHECK_THROWS(setSugar(g, ens));
+}
+
+TEST_CASE("Grille setFourmis"){
+    vector<Coord> fourmiCoords{{
+            Coord(3, 4),
+            Coord(3, 5),
+            Coord(4, 4),
+            Coord(4, 5)
+        }};
+    EnsCoord ens = EnsCoord(fourmiCoords);
+    vector<Fourmi> fourmis = vector<Fourmi>();
+
+    for(int i = 0; i < fourmiCoords.size(); i++){
+        Coord c = fourmiCoords[i];
+        Fourmi f = Fourmi(c, i);
+        fourmis.push_back(f);
+    }
+
+    Grille g = Grille();
+    Grille g_bad = Grille();
+
+    setSugar(g_bad, ens);
+
+    CHECK_THROWS(setFourmis(g_bad, fourmis));
+
+    for(Coord c: fourmiCoords){
+        CHECK( g.loadPlace(c).isEmpty() );
+        CHECK( g.loadPlace(c).getFourmiID() == -1 );
+    }
+    
+    setFourmis(g, fourmis);
+
+
+    for(int i = 0; i < fourmiCoords.size(); i++){
+        Coord c = fourmiCoords[i];
+        CHECK_FALSE( g.loadPlace(c).isEmpty() );
+        CHECK_FALSE( g.loadPlace(c).getFourmiID() == -1 );
+        CHECK( g.loadPlace(c).getFourmiID() == i );
+    }
+
+    CHECK_THROWS(setNid(g, ens));
+    CHECK_THROWS(setSugar(g, ens));
+}
+
+TEST_CASE("Grille coordAroundNid"){
+    vector<Coord> nid_coords{{
+        Coord(4, 7),
+        Coord(4, 8),
+        Coord(5, 7),
+        Coord(5, 8)
+    }};
+    EnsCoord nid_ens = EnsCoord(nid_coords);
+
+    EnsCoord res = coordsAroundNid(nid_ens);
+
+    CHECK(res.taille() == 12);
+
+    vector<Coord> around_coords{{
+        Coord(6, 6),
+        Coord(5, 6),
+        Coord(4, 6),
+        Coord(3, 6),
+        Coord(3, 7),
+        Coord(3, 8),
+        Coord(3, 9),
+        Coord(4, 9),
+        Coord(5, 9),
+        Coord(6, 9),
+        Coord(6, 8),
+        Coord(6, 7),
+    }};
+    for(Coord c: around_coords){
+        CHECK(res.contient(c));
+    }
+}
+
+TEST_CASE("Grille initializeGrille"){
+    vector<Coord> nid_coords{{
+        Coord(4, 7),
+        Coord(4, 8),
+        Coord(5, 7),
+        Coord(5, 8)
+    }};
+    EnsCoord nid_ens = EnsCoord(nid_coords);
+
+    vector<Coord> sugar_coords{{
+        Coord(2, 7),
+        Coord(4, 12),
+        Coord(11, 7),
+        Coord(10, 2)
+    }};
+    EnsCoord sugar_ens = EnsCoord(sugar_coords);
+
+    EnsCoord fourmis_coords = coordsAroundNid(nid_ens);
+    vector<Fourmi> fourmis{{}};
+    for(int i = 0; i < fourmis_coords.taille(); i++){
+        Fourmi f = Fourmi(fourmis_coords.ieme(i), i);
+        fourmis.push_back(f);
+    }
+
+    Grille g = initializeGrille(fourmis, sugar_ens, nid_ens);
+
+    for(int i = 0; i < fourmis_coords.taille(); i++){
+        Coord c = fourmis_coords.ieme(i);
+        CHECK_FALSE( g.loadPlace(c).isEmpty() );
+        CHECK_FALSE( g.loadPlace(c).getFourmiID() == -1 );
+        CHECK( g.loadPlace(c).getFourmiID() == i );
+    }
+
+    for(Coord c: sugar_ens.getCoords()){
+        CHECK_FALSE( g.loadPlace(c).isEmpty() );
+        CHECK( g.loadPlace(c).containSugar() );
+    }
+
+    for(Coord c: nid_ens.getCoords()){
+        CHECK_FALSE( g.loadPlace(c).isEmpty() );
+        CHECK( g.loadPlace(c).containNid() );
+        CHECK( g.loadPlace(c).getPheroNid() == 1 );
+    }
+}
+
+TEST_CASE("Grille linearizePheroNid"){
+    Grille g = Grille();
+
+    vector<Coord> nid_coords{{
+        Coord(4, 7),
+        Coord(4, 8),
+        Coord(5, 7),
+        Coord(5, 8)
+    }};
+    EnsCoord nid_ens = EnsCoord(nid_coords);
+
+    CHECK(g.loadPlace(Coord(4, 7)).getPheroNid() == 0);
+    CHECK( g.loadPlace(Coord(3, 7)).getPheroNid() == 0 );
+
+    setNid(g, nid_ens);
+
+    CHECK(g.loadPlace(Coord(4, 7)).getPheroNid() == 1);
+    CHECK( g.loadPlace(Coord(3, 7)).getPheroNid() == 0 );
+
+    linearizePheroNid(g);
+
+    CHECK( float_equal(g.loadPlace(Coord(3, 7)).getPheroNid(), 1 - (1/TAILLEGRILLE)) );
+    CHECK( float_equal(g.loadPlace(Coord(2, 7)).getPheroNid(), (1 - (1/TAILLEGRILLE))) - (1/TAILLEGRILLE) );
+
+}
+
 TEST_SUITE_END();
