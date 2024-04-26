@@ -101,3 +101,13 @@ void replaceFourmi(Fourmi& f, Place& from, Place& to){
 bool isTheClosestNid(const Place& p1, const Place& p2){
     return p1.getPheroNid() >= p2.getPheroNid();
 }
+
+vector<Place> emptyPlaces(vector<Place> places){
+    vector<Place> res{{}};
+    for(Place p: places){
+        if(!p.isEmpty()) continue;
+
+        res.push_back(p);
+    }
+    return res;
+}

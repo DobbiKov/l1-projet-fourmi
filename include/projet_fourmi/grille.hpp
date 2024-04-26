@@ -10,9 +10,12 @@ using namespace std;
 class Grille{
 private:
     vector<Place> places;
+    vector<Fourmi> fourmis;
+    void initialiser_places();
 
 public:
     Grille();
+    Grille(vector<Fourmi> _fourmis);
     Place loadPlace(const Coord& c) const;
     void changePlace(Place p);
     void decreasePheroSugar();
@@ -29,6 +32,9 @@ void setFourmis(Grille& g, vector<Fourmi> fourmis);
 Grille initializeGrille(vector<Fourmi> fourmis, EnsCoord sugar_coords, EnsCoord nid_coords);
 void linearizePheroNid(Grille& g);
 void decreasePheroSugar(Grille& g);
+
+//return the places from the Grid by Coordinates
+vector<Place> loadPlacesByCoords(const Grille &g, EnsCoord ens);
 
 void areFourmiGrilleCoherent(const Grille &g, const Fourmi &f);
 

@@ -21,6 +21,14 @@ bool Fourmi::porteSucre() const{
     return porte_sucre;
 }
 
+bool Fourmi::searchingSugar() const{
+    return !porteSucre();
+}
+
+bool Fourmi::goingToTheNid() const{
+    return porteSucre();
+}
+
 void Fourmi::prendSucre(){
     if(porteSucre()) 
         throw runtime_error("The ant is already carrying sugar.");

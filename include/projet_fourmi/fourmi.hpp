@@ -18,6 +18,8 @@ public:
     void prendSucre();
     void poseSucre();
     void deplace(Coord c);
+    bool searchingSugar() const;
+    bool goingToTheNid() const;
 };
 
 vector<Fourmi> createListFourmis(EnsCoord ens);

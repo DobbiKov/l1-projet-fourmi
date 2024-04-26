@@ -2,13 +2,21 @@
 
 using namespace std;
 
-Grille::Grille():places{vector<Place>()}{
+void Grille::initialiser_places(){
     for(int i = 0; i < TAILLEGRILLE; i++){
         for(int j = 0; j < TAILLEGRILLE; j++){
             Place p = Place(Coord(i, j));
             places.push_back(p);
         }
     }
+}
+
+Grille::Grille():places{vector<Place>()}, fourmis{vector<Fourmi>()}{
+    initialiser_places();
+}
+
+Grille::Grille(vector<Fourmi> _fourmis):places{vector<Place>()}, fourmis{vector<Fourmi>()}{
+    initialiser_places();
 }
 
 Place Grille::loadPlace(const Coord& c) const{
@@ -128,5 +136,13 @@ void areFourmiGrilleCoherent(const Grille &g, const Fourmi &f){
 
     if(p.getFourmiID() != f.getNum()) 
         throw runtime_error("The state of the program isn't coherent! Error: Grille and Fourmi");
+}
+
+vector<Place> loadPlacesByCoords(const Grille &g, EnsCoord ens){
+        vector<Place> places{{}};
+        for(Coord c: ens.getCoords()){
+            places.push_back(g.loadPlace(c));
+        }  
+        return places;
 }
 
