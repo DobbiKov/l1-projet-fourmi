@@ -117,13 +117,13 @@ void makeFourmiPutSugar(Fourmi f, vector<Fourmi>& fourmis, Grille &g){
 }
 
 void makeMoveToTheNidFourmi(Fourmi f, vector<Fourmi>& fourmis, Grille &g){
-    vector<Place> near_places = loadPlacesByCoords( g, voisines(f.getCoords()) );
+    vector<Place> near_places = emptyPlaces( loadPlacesByCoords( g, voisines(f.getCoords()) ) );
     Place move = closestPlaceToTheNid(near_places);
     makeFourmiMoveToPlace(f, fourmis, g, move);
 }
 
 void makeMoveToThePheroSugarFourmi(Fourmi f, vector<Fourmi>& fourmis, Grille &g){
-    vector<Place> near_places = loadPlacesByCoords( g, voisines(f.getCoords()) );
+    vector<Place> near_places = emptyPlaces( loadPlacesByCoords( g, voisines(f.getCoords()) ) );
     Place move = closestPlaceToTheSugar(near_places);
     makeFourmiMoveToPlace(f, fourmis, g, move);  
 }

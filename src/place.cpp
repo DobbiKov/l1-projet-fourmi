@@ -147,11 +147,8 @@ Place closestPlaceToTheSugar(vector<Place> places){
             count--;
             continue;
         }
-        // if(float_equal(places[count].getPheroSugar(), 0.0f)){
-        //     swap(places[count], places[places.size()-1]);
-        //     places.pop_back();
-        // }
-        if(isTheFarestSugar(places[count], places[count-1])){
+
+        if(isTheFarestSugar(places[count], places[count-1]) && isTheClosestNid(places[count], places[count-1])){
             swap(places[count], places[places.size()-1]);
             places.pop_back();
         }else{
