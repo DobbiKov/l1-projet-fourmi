@@ -119,6 +119,10 @@ Grille initializeGrille(vector<Fourmi> fourmis, EnsCoord sugar_coords, EnsCoord 
     setSugar(g, sugar_coords);
     setFourmis(g, fourmis);
 
+    for(int i = 0; i < AMOUNT_OF_INIT_RAND_SUGAR; i++){
+        putSugarInRandomPlace(g);
+    }
+
     linearizePheroNid(g);
     return g;
 }
@@ -189,7 +193,6 @@ bool isFourmiNeighbour(const Grille &g, Coord c){
     return false;
 }
 
-//TODO: test this functions
 Place getNeigbourNidPlace(const Grille &g, Coord c){
     EnsCoord ens = voisines(c);
     vector<Place> places = loadPlacesByCoords(g, ens);
@@ -225,4 +228,10 @@ Place getRandomEmptyPlace(const Grille &g){
         p = g.loadPlaceById(rn);
     }while(!p.isEmpty());
     return p;
+}
+
+void putSugarInRandomPlace(Grille &g){
+    Place rp = getRandomEmptyPlace(g);
+    rp.setSugar();
+    g.changePlace(rp);
 }

@@ -7,6 +7,8 @@
 
 using namespace std;
 
+const int AMOUNT_OF_INIT_RAND_SUGAR = 4;
+
 class Grille{
 private:
     vector<Place> places;
@@ -72,4 +74,8 @@ Place getNeigbourFourmiPlace(const Grille &g, Coord c);
 /// @param g - the grid
 /// @return random empty place
 Place getRandomEmptyPlace(const Grille &g);
+
+/// @brief Puts sugar in random place
+/// @param g the reference to the grid
+void putSugarInRandomPlace(Grille &g);
 #endif

@@ -64,11 +64,10 @@ sf::CircleShape draw_sugar(int row, int column, float color=12.0){
     return circle;
 }
 
+
 void makeGameStep(vector<Fourmi>& fourmis, Grille &g, int &game_count){
     if(game_count % NEW_SUGAR_APP_SPEED == 0){
-        Place rp = getRandomEmptyPlace(g);
-        rp.setSugar();
-        g.changePlace(rp);
+        putSugarInRandomPlace(g);
     }
     g.decreasePheroSugar();
     for(Fourmi f: fourmis){
@@ -187,10 +186,10 @@ int main()
     EnsCoord nid_ens = EnsCoord(nid_coords);
 
     vector<Coord> sugar_coords{{
-        Coord(2, 7),
-        Coord(4, 12),
-        Coord(11, 7),
-        Coord(10, 2)
+        // Coord(2, 7),
+        // Coord(4, 12),
+        // Coord(11, 7),
+        // Coord(10, 2)
     }};
     EnsCoord sugar_ens = EnsCoord(sugar_coords);
 
@@ -202,7 +201,7 @@ int main()
         fourmis.push_back(f);
     }
     Grille grille = initializeGrille(fourmis, sugar_ens, nid_ens);
-    int GAME_COUNT;
+    int GAME_COUNT = 1;
 
 
     int WINDOW_SIZE_FOR_TEXT = 500;
