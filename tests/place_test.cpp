@@ -208,4 +208,56 @@ TEST_CASE("the closest to the nid among places"){
     vector<Place> places{{p1, p2, p3, p4, p5}};
     CHECK(closestPlaceToTheNid(places).getCoords() == p4.getCoords());
 }
+
+TEST_CASE("closest to the sugar"){
+    Place p1 = Place(Coord(3, 5));
+    Place p2 = Place(Coord(4, 5));
+    p1.setPheroSugar();
+    p2.setPheroSugar();
+    p2.decreasePheroSugar();
+    CHECK(isTheClosestSugar(p1, p2));
+    CHECK_FALSE(isTheClosestSugar(p2, p1));
+}
+TEST_CASE("closest to the sugar"){
+    Place p1 = Place(Coord(3, 5));
+    Place p2 = Place(Coord(4, 5));
+    p1.setPheroSugar();
+    p2.setPheroSugar();
+    p2.decreasePheroSugar();
+    CHECK_FALSE(isTheFarestSugar(p1, p2));
+    CHECK(isTheFarestSugar(p2, p1));
+}
+
+TEST_CASE("the closest to the sugar among places"){
+    Place p1 = Place(Coord(3, 5));
+    Place p2 = Place(Coord(4, 5));
+    Place p3 = Place(Coord(5, 5));
+    Place p4 = Place(Coord(5, 7));
+    Place p5 = Place(Coord(3, 11));
+    p1.setPheroSugar();
+    p2.setPheroSugar();
+    p3.setPheroSugar();
+    p4.setPheroSugar();
+    p5.setPheroSugar();
+
+    p1.decreasePheroSugar();
+    p1.decreasePheroSugar();
+
+    p2.decreasePheroSugar();
+    p2.decreasePheroSugar();
+
+    p3.decreasePheroSugar();
+    p3.decreasePheroSugar();
+    p3.decreasePheroSugar();
+
+    p4.decreasePheroSugar();
+
+    p5.decreasePheroSugar();
+    p5.decreasePheroSugar();
+    p5.decreasePheroSugar();
+    p5.decreasePheroSugar();
+    vector<Place> places{{p1, p2, p3, p4, p5}};
+    CHECK(closestPlaceToTheSugar(places).getCoords() == p4.getCoords());
+}
+
 TEST_SUITE_END();

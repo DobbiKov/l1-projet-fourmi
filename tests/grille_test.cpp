@@ -239,8 +239,8 @@ TEST_CASE("Grille linearizePheroNid"){
 
     linearizePheroNid(g);
 
-    CHECK( float_equal(g.loadPlace(Coord(3, 7)).getPheroNid(), 1 - (1/TAILLEGRILLE)) );
-    CHECK( float_equal(g.loadPlace(Coord(2, 7)).getPheroNid(), (1 - (1/TAILLEGRILLE))) - (1/TAILLEGRILLE) );
+    CHECK( float_equal(g.loadPlace(Coord(3, 7)).getPheroNid(), 1.0f - (1.0f/TAILLEGRILLE)) );
+    CHECK( float_equal(g.loadPlace(Coord(2, 7)).getPheroNid(), (1.0f - (1.0f/TAILLEGRILLE))) - (1.0f/TAILLEGRILLE) );
 
 }
 

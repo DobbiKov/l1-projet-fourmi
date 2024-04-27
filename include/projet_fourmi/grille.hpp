@@ -10,12 +10,13 @@ using namespace std;
 class Grille{
 private:
     vector<Place> places;
-    vector<Fourmi> fourmis;
     void initialiser_places();
+    int amount_of_sugar;
+
+    void addSugar() { amount_of_sugar += AMOUNT_OF_SUGAR_FOURMI_PORTE; }
 
 public:
     Grille();
-    Grille(vector<Fourmi> _fourmis);
     Place loadPlace(const Coord& c) const;
     void changePlace(Place p);
     void decreasePheroSugar();
@@ -24,6 +25,9 @@ public:
     vector<Place> getPlaces() const {return places;}
     //la taille du tableau places
     int numOfPlaces() const {return places.size(); }
+
+    int getAmountOfSugar() const { return amount_of_sugar; }
+    void poseSugarFromFourmi(Fourmi f);
 };
 
 void setNid(Grille& g, EnsCoord ens);
@@ -63,4 +67,9 @@ Place getNeigbourSugarPlace(const Grille &g, Coord c);
 
 /// return the place of the neigbour fourmi around coordinates and error if there is not
 Place getNeigbourFourmiPlace(const Grille &g, Coord c);
+
+/// @brief returns random empty place
+/// @param g - the grid
+/// @return random empty place
+Place getRandomEmptyPlace(const Grille &g);
 #endif

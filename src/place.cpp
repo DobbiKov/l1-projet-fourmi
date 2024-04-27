@@ -1,4 +1,5 @@
 #include <vector>
+#include <projet_fourmi/outils.hpp>
 #include <projet_fourmi/place.hpp>
 #include <projet_fourmi/fourmi.hpp>
 
@@ -105,6 +106,13 @@ bool isTheFarestNid(const Place& p1, const Place& p2){
     return p1.getPheroNid() <= p2.getPheroNid();
 }
 
+bool isTheClosestSugar(const Place& p1, const Place& p2){
+    return p1.getPheroSugar() >= p2.getPheroSugar();
+}
+bool isTheFarestSugar(const Place& p1, const Place& p2){
+    return p1.getPheroSugar() <= p2.getPheroSugar();
+}
+
 Place closestPlaceToTheNid(vector<Place> places){
     int count = places.size()-1;
     while(places.size() > 1){
@@ -117,6 +125,33 @@ Place closestPlaceToTheNid(vector<Place> places){
             continue;
         }
         if(isTheFarestNid(places[count], places[count-1])){
+            swap(places[count], places[places.size()-1]);
+            places.pop_back();
+        }else{
+            swap(places[count-1], places[places.size()-1]);
+            places.pop_back();
+        }
+        count--;
+    }
+    return places[0];
+}
+
+Place closestPlaceToTheSugar(vector<Place> places){
+    int count = places.size()-1;
+    while(places.size() > 1){
+        if(count == 0) count = places.size()-1;
+        //if the place isn't empty, the fourmi can't go there, we remove this place
+        if(!places[count].isEmpty()){
+            swap(places[count], places[places.size()-1]);
+            places.pop_back();
+            count--;
+            continue;
+        }
+        // if(float_equal(places[count].getPheroSugar(), 0.0f)){
+        //     swap(places[count], places[places.size()-1]);
+        //     places.pop_back();
+        // }
+        if(isTheFarestSugar(places[count], places[count-1])){
             swap(places[count], places[places.size()-1]);
             places.pop_back();
         }else{

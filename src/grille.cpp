@@ -13,12 +13,13 @@ void Grille::initialiser_places(){
     }
 }
 
-Grille::Grille():places{vector<Place>()}, fourmis{vector<Fourmi>()}{
+Grille::Grille():places{vector<Place>()}, amount_of_sugar{0}{
     initialiser_places();
 }
 
-Grille::Grille(vector<Fourmi> _fourmis):places{vector<Place>()}, fourmis{vector<Fourmi>()}{
-    initialiser_places();
+void Grille::poseSugarFromFourmi(Fourmi f){
+    if(!f.porteSucre()) throw invalid_argument("This fourmi doesn't have any sugar!");
+    addSugar();
 }
 
 Place Grille::loadPlace(const Coord& c) const{
@@ -214,4 +215,14 @@ Place getNeigbourFourmiPlace(const Grille &g, Coord c){
         if(p.getFourmiID() != -1) return p;
     }
     throw invalid_argument("There's not neighbour fourmi around this coordinate!");
+}
+
+Place getRandomEmptyPlace(const Grille &g){
+    Place p(Coord(0, 0));
+    p.setNid();
+    do{
+        int rn = rand() % g.numOfPlaces();
+        p = g.loadPlaceById(rn);
+    }while(!p.isEmpty());
+    return p;
 }
