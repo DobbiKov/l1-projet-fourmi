@@ -5,7 +5,7 @@
 
 using namespace std;
 
-const int TAILLEGRILLE = 20;
+const int TAILLEGRILLE = 25;
 
 class Coord{
 public:

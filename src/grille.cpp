@@ -36,7 +36,7 @@ int Grille::getCoordIdx(const Coord& c) const{
     //gets the number of the place in the array of places of the grille
     int i = c.getLine();
     int j = c.getColumn();
-    int idx = j+(i*20);
+    int idx = j+(i*TAILLEGRILLE);
     if(idx >= places.size())
         throw invalid_argument("The coordinates are out of Grille!");
     return idx;
