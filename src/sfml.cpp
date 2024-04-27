@@ -10,14 +10,24 @@ const int grid_size = TAILLEGRILLE;
 const float scale = WINDOW_SIZE / (TAILLEGRILLE);
 const int GAME_SPEED = 5;
 
-sf::RectangleShape draw_empty_square(int row, int column, float color=12.0){
+void makeGameStep(vector<Fourmi>& fourmis, Grille &g);
+void makeRandomMoveFourmi(Fourmi f, vector<Fourmi>& fourmis, Grille &g);
+void makeMoveToTheNidFourmi(Fourmi f, vector<Fourmi>& fourmis, Grille &g);
+void makeRandomMoveFourmi(Fourmi f, vector<Fourmi>& fourmis, Grille &g);
+void makeFourmiMoveToPlace(Fourmi &f, vector<Fourmi>& fourmis, Grille &g, Place move);
+
+void makeFourmiTakeSugar(Fourmi f, vector<Fourmi>& fourmis, Grille &g);
+
+sf::RectangleShape draw_empty_square(int row, int column, const Place &p, float color=12.0){
     sf::RectangleShape rectangle(sf::Vector2f(scale, scale));
-    rectangle.setFillColor(sf::Color::Black);
+    // rectangle.setFillColor(sf::Color::Black);
+    int alpha = (int)(p.getPheroNid()*100);
+    rectangle.setFillColor(sf::Color(120, 120, 120, alpha));
     rectangle.setPosition(sf::Vector2f(scale*row, scale*column));
 
     return rectangle;
 }
-sf::RectangleShape draw_nid(int row, int column, float color=12.0){
+sf::RectangleShape draw_nid(int row, int column, const Place &p, float color=12.0){
     sf::RectangleShape rectangle(sf::Vector2f(scale, scale));
     rectangle.setFillColor(sf::Color::Yellow);
     rectangle.setPosition(sf::Vector2f(scale*row, scale*column));
@@ -25,9 +35,13 @@ sf::RectangleShape draw_nid(int row, int column, float color=12.0){
     return rectangle;
 }
 
-sf::CircleShape draw_fourmi(int row, int column, float color=12.0){
+sf::CircleShape draw_fourmi(int row, int column, Fourmi f, float color=12.0){
     sf::CircleShape triangle(scale/2, 3);
+
     triangle.setFillColor(sf::Color::Green);
+    if(f.searchingSugar()){
+        triangle.setFillColor(sf::Color::Red);
+    }
     triangle.setPosition(sf::Vector2f(scale*row, scale*column));
 
     return triangle;
@@ -43,26 +57,62 @@ sf::CircleShape draw_sugar(int row, int column, float color=12.0){
 
 void makeGameStep(vector<Fourmi>& fourmis, Grille &g){
     for(Fourmi f: fourmis){
-        EnsCoord vois = voisines(f.getCoords());
-        vector<Place> poss_moves = emptyPlaces(loadPlacesByCoords(g, vois));
-        int rand_moves_idx = rand() % poss_moves.size();
-        Place move = poss_moves[rand_moves_idx];
+        if(f.goingToTheNid()){
+            if(isNidNeighbour(g, f.getCoords())){
+                continue;
+            }
+            makeMoveToTheNidFourmi(f, fourmis, g);
+            continue;
+        }
+        if(f.searchingSugar()){
+            if(isSugarNeighbour(g, f.getCoords())){
+                makeFourmiTakeSugar(f, fourmis, g);
+                continue;
+            }
+            makeRandomMoveFourmi(f, fourmis, g);
+            continue;
+        }
+        // makeRandomMoveFourmi(f, fourmis, g);
+    }
+}
 
+void makeFourmiTakeSugar(Fourmi f, vector<Fourmi>& fourmis, Grille &g){
+    Place p = getNeigbourSugarPlace(g, f.getCoords());
+    p.removeSugar();
+    g.changePlace(p);
+    f.prendSucre();
+    fourmis[f.getNum()] = f;
+}
+
+void makeMoveToTheNidFourmi(Fourmi f, vector<Fourmi>& fourmis, Grille &g){
+    vector<Place> near_places = loadPlacesByCoords( g, voisines(f.getCoords()) );
+    Place move = closestPlaceToTheNid(near_places);
+    makeFourmiMoveToPlace(f, fourmis, g, move);
+}
+
+//makes random move for fourmi updating the state of the program
+void makeRandomMoveFourmi(Fourmi f, vector<Fourmi>& fourmis, Grille &g){
+    Place move = getNextRandomPlaceToGo(f, g);
+    makeFourmiMoveToPlace(f, fourmis, g, move);
+}
+
+void makeFourmiMoveToPlace(Fourmi &f, vector<Fourmi>& fourmis, Grille &g, Place move){
+        //replace fourmi
         Coord old_coords = f.getCoords();
-        f.deplace(move.getCoords());
-        fourmis[f.getNum()] = f;
-
-
         Place old_place = g.loadPlace(old_coords);
-        old_place.removeFourmi();
-        g.changePlace(old_place);
+        Place new_place = g.loadPlace(move.getCoords());
+        if(!new_place.isEmpty()) return;
 
-        Place new_place = g.loadPlace(f.getCoords());
-        new_place.setFourmi(f);
+        replaceFourmi(f, old_place, new_place);
+
+
+        //update places and fourmis
+        fourmis[f.getNum()] = f;
+        g.changePlace(old_place);
         g.changePlace(new_place);
 
+        //check if the state of the program is correct
         areFourmiGrilleCoherent(g, f);
-    }
 }
 
 int main()
@@ -94,6 +144,7 @@ int main()
     }
     Grille grille = initializeGrille(fourmis, sugar_ens, nid_ens);
 
+
     
     sf::RenderWindow window(sf::VideoMode(WINDOW_SIZE, WINDOW_SIZE), "Simulation");
 
@@ -108,18 +159,15 @@ int main()
                 window.close();
         }
 
-        // sf::Time elapsed = clock.restart(); // Get the elapsed time and restart the clock
-        // float deltaTime = elapsed.asSeconds(); // Time in seconds since last frame
-
         window.clear(sf::Color::White);
 
         for(Place p: grille.getPlaces()){
             Coord c = p.getCoords();
-            window.draw(draw_empty_square(c.getLine(), c.getColumn()));
+            window.draw(draw_empty_square(c.getLine(), c.getColumn(), p));
             if(p.isEmpty()) continue;
-            if(p.containNid()) window.draw(draw_nid(c.getLine(), c.getColumn()));
+            if(p.containNid()) window.draw(draw_nid(c.getLine(), c.getColumn(), p));
             if(p.containSugar()) window.draw(draw_sugar(c.getLine(), c.getColumn()));
-            if(p.getFourmiID() != -1 && fourmis[p.getFourmiID()].isAlive()) window.draw(draw_fourmi(c.getLine(), c.getColumn()));
+            if(p.getFourmiID() != -1 && fourmis[p.getFourmiID()].isAlive()) window.draw(draw_fourmi(c.getLine(), c.getColumn(), fourmis[p.getFourmiID()]));
         }
 
         makeGameStep(fourmis, grille);

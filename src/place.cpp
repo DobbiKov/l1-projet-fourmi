@@ -101,6 +101,32 @@ void replaceFourmi(Fourmi& f, Place& from, Place& to){
 bool isTheClosestNid(const Place& p1, const Place& p2){
     return p1.getPheroNid() >= p2.getPheroNid();
 }
+bool isTheFarestNid(const Place& p1, const Place& p2){
+    return p1.getPheroNid() <= p2.getPheroNid();
+}
+
+Place closestPlaceToTheNid(vector<Place> places){
+    int count = places.size()-1;
+    while(places.size() > 1){
+        if(count == 0) count = places.size()-1;
+        //if the place isn't empty, the fourmi can't go there, we remove this place
+        if(!places[count].isEmpty()){
+            swap(places[count], places[places.size()-1]);
+            places.pop_back();
+            count--;
+            continue;
+        }
+        if(isTheFarestNid(places[count], places[count-1])){
+            swap(places[count], places[places.size()-1]);
+            places.pop_back();
+        }else{
+            swap(places[count-1], places[places.size()-1]);
+            places.pop_back();
+        }
+        count--;
+    }
+    return places[0];
+}
 
 vector<Place> emptyPlaces(vector<Place> places){
     vector<Place> res{{}};

@@ -1,4 +1,6 @@
 #include <projet_fourmi/grille.hpp>
+#include <iostream> 
+//remove 
 
 using namespace std;
 
@@ -30,6 +32,7 @@ void Grille::changePlace(Place p){
 }
 
 int Grille::getCoordIdx(const Coord& c) const{
+    //gets the number of the place in the array of places of the grille
     int i = c.getLine();
     int j = c.getColumn();
     int idx = j+(i*20);
@@ -94,12 +97,13 @@ float getMaximalNeighbourPheroNid(Grille& g, Place p){
 
 void linearizePheroNid(Grille& g){
     for(int i = 0; i < TAILLEGRILLE; i++){
+
         for(int i = 0; i < g.numOfPlaces(); i++){
             Place p = g.loadPlaceById(i);
             if(p.getPheroNid() >= 1) continue;
 
             float max_vois = getMaximalNeighbourPheroNid(g, p);
-            float new_intensity = max_vois - (1/TAILLEGRILLE);
+            float new_intensity = max_vois - (1.0/TAILLEGRILLE);
             p.setPheroNid( 
                 new_intensity > 0 ? new_intensity : 0
             );
@@ -146,3 +150,68 @@ vector<Place> loadPlacesByCoords(const Grille &g, EnsCoord ens){
         return places;
 }
 
+Place getNextRandomPlaceToGo(const Fourmi &f, const Grille &g){
+        //gets all the neighbour coords, remove all non-empty places
+        EnsCoord vois = voisines(f.getCoords());
+        vector<Place> poss_moves = emptyPlaces(loadPlacesByCoords(g, vois));
+        int rand_moves_idx = rand() % poss_moves.size();
+        //get the random one from the possible places
+        Place move = poss_moves[rand_moves_idx];
+        return move;
+}
+
+bool isNidNeighbour(const Grille &g, Coord c){
+    EnsCoord ens = voisines(c);
+    vector<Place> places = loadPlacesByCoords(g, ens);
+    for(Place p: places){
+        if(p.containNid()) return true;
+    }
+    return false;
+}
+
+
+bool isSugarNeighbour(const Grille &g, Coord c){
+    EnsCoord ens = voisines(c);
+    vector<Place> places = loadPlacesByCoords(g, ens);
+    for(Place p: places){
+        if(p.containSugar()) return true;
+    }
+    return false;
+}
+
+bool isFourmiNeighbour(const Grille &g, Coord c){
+    EnsCoord ens = voisines(c);
+    vector<Place> places = loadPlacesByCoords(g, ens);
+    for(Place p: places){
+        if(p.getFourmiID() != -1) return true;
+    }
+    return false;
+}
+
+//TODO: test this functions
+Place getNeigbourNidPlace(const Grille &g, Coord c){
+    EnsCoord ens = voisines(c);
+    vector<Place> places = loadPlacesByCoords(g, ens);
+    for(Place p: places){
+        if(p.containNid()) return p;
+    }
+    throw invalid_argument("There's not neighbour nid around this coordinate!");
+}
+
+Place getNeigbourSugarPlace(const Grille &g, Coord c){
+    EnsCoord ens = voisines(c);
+    vector<Place> places = loadPlacesByCoords(g, ens);
+    for(Place p: places){
+        if(p.containSugar()) return p;
+    }
+    throw invalid_argument("There's not neighbour sugar around this coordinate!");
+}
+
+Place getNeigbourFourmiPlace(const Grille &g, Coord c){
+    EnsCoord ens = voisines(c);
+    vector<Place> places = loadPlacesByCoords(g, ens);
+    for(Place p: places){
+        if(p.getFourmiID() != -1) return p;
+    }
+    throw invalid_argument("There's not neighbour fourmi around this coordinate!");
+}

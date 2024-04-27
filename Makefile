@@ -9,6 +9,7 @@ BUILD_DIR=build
 BIN_DIR=bin
 EXEC_FILES=$(BIN_DIR)/test $(BIN_DIR)/sfml
 MAIN_HEADERS=$(INCLUDE_DIR)/outils.hpp $(INCLUDE_DIR)/coord.hpp $(INCLUDE_DIR)/fourmi.hpp $(INCLUDE_DIR)/place.hpp $(INCLUDE_DIR)/grille.hpp
+TEST_FILES=$(TEST_DIR)/coord_test.cpp $(TEST_DIR)/enscoord_test.cpp $(TEST_DIR)/coord_funcs_test.cpp $(TEST_DIR)/place_test.cpp $(TEST_DIR)/fourmi_test.cpp $(TEST_DIR)/grille_test.cpp
 
 $(shell mkdir -p $(BUILD_DIR))
 $(shell mkdir -p $(BIN_DIR))
@@ -20,7 +21,7 @@ OBJ_sfml=$(BUILD_DIR)/coord.o $(BUILD_DIR)/outils.o $(BUILD_DIR)/sfml.o $(BUILD_
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp $(INCLUDE_DIR)/%.hpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-$(BUILD_DIR)/test.o: $(TEST_DIR)/test.cpp $(MAIN_HEADERS)
+$(BUILD_DIR)/test.o: $(TEST_DIR)/test.cpp $(TEST_DIR)/coord_test.cpp $(MAIN_HEADERS)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(BUILD_DIR)/sfml.o: $(SRC_DIR)/sfml.cpp $(MAIN_HEADERS)

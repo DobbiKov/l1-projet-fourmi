@@ -46,7 +46,9 @@ public:
 };
 
 void replaceFourmi(Fourmi& f, Place& from, Place& to);
-bool isTheClosestNid(Place p1, Place p2);
+bool isTheClosestNid(const Place& p1, const Place& p2);
+bool isTheFarestNid(const Place& p1, const Place& p2);
+Place closestPlaceToTheNid(vector<Place> places);
 
 //gets as a parameter vector of places and returns only the empty ones
 vector<Place> emptyPlaces(vector<Place> places);
