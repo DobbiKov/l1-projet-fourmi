@@ -8,6 +8,7 @@
 #include <projet_fourmi/place.hpp>
 #include <projet_fourmi/grille.hpp>
 #include <projet_fourmi/consts.hpp>
+#include <projet_fourmi/team_consts.hpp>
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include <lib/doctest.h>
@@ -39,7 +40,7 @@ TEST_CASE("Grille load and change place"){
     Coord c = Coord(1, 3);
     Place p = g.loadPlace(c);
     CHECK_FALSE(p.containNid());
-    p.setNid();
+    p.setNid(NUMBER_OF_COLONIES-1);
 
     g.changePlace(p);
     Place p1 = g.loadPlace(c);
@@ -63,14 +64,14 @@ TEST_CASE("Grille setNid"){
         CHECK( g.loadPlace(c).getPheroNid() == 0 );
     }
     
-    setNid(g, ens);
+    setNid(g, ens, NUMBER_OF_COLONIES-1);
     
     for(Coord c: nidCoords){
         CHECK_FALSE( g.loadPlace(c).isEmpty() );
         CHECK( g.loadPlace(c).containNid() );
         CHECK( g.loadPlace(c).getPheroNid() == 1 );
     }
-    CHECK_THROWS(setNid(g, ens));
+    CHECK_THROWS(setNid(g, ens, NUMBER_OF_COLONIES-1));
     CHECK_THROWS(setSugar(g, ens));
 }
 
@@ -96,7 +97,7 @@ TEST_CASE("Grille setSugar"){
         CHECK_FALSE( g.loadPlace(c).isEmpty() );
         CHECK( g.loadPlace(c).containSugar() );
     }
-    CHECK_THROWS(setNid(g, ens));
+    CHECK_THROWS(setNid(g, ens, NUMBER_OF_COLONIES-1));
     CHECK_THROWS(setSugar(g, ens));
 }
 
@@ -112,7 +113,7 @@ TEST_CASE("Grille setFourmis"){
 
     for(int i = 0; i < fourmiCoords.size(); i++){
         Coord c = fourmiCoords[i];
-        Fourmi f = Fourmi(c, i);
+        Fourmi f = Fourmi(c, i, NUMBER_OF_COLONIES-1);
         fourmis.push_back(f);
     }
 
@@ -138,7 +139,7 @@ TEST_CASE("Grille setFourmis"){
         CHECK( g.loadPlace(c).getFourmiID() == i );
     }
 
-    CHECK_THROWS(setNid(g, ens));
+    CHECK_THROWS(setNid(g, ens, NUMBER_OF_COLONIES-1));
     CHECK_THROWS(setSugar(g, ens));
 }
 
@@ -194,11 +195,11 @@ TEST_CASE("Grille initializeGrille"){
     EnsCoord fourmis_coords = coordsAroundNid(nid_ens);
     vector<Fourmi> fourmis{{}};
     for(int i = 0; i < fourmis_coords.taille(); i++){
-        Fourmi f = Fourmi(fourmis_coords.ieme(i), i);
+        Fourmi f = Fourmi(fourmis_coords.ieme(i), i, NUMBER_OF_COLONIES-1);
         fourmis.push_back(f);
     }
 
-    Grille g = initializeGrille(fourmis, sugar_ens, nid_ens);
+    Grille g = initializeGrille(fourmis, sugar_ens, NUMBER_OF_COLONIES);
 
     for(int i = 0; i < fourmis_coords.taille(); i++){
         Coord c = fourmis_coords.ieme(i);
@@ -233,7 +234,7 @@ TEST_CASE("Grille linearizePheroNid"){
     CHECK(g.loadPlace(Coord(4, 7)).getPheroNid() == 0);
     CHECK( g.loadPlace(Coord(3, 7)).getPheroNid() == 0 );
 
-    setNid(g, nid_ens);
+    setNid(g, nid_ens, NUMBER_OF_COLONIES-1);
 
     CHECK(g.loadPlace(Coord(4, 7)).getPheroNid() == 1);
     CHECK( g.loadPlace(Coord(3, 7)).getPheroNid() == 0 );
@@ -269,7 +270,7 @@ TEST_CASE("Grille isNidNeighbour"){
     Coord c2 = Coord(6, 9);
 
     Place p = g.loadPlace(c1);
-    p.setNid();
+    p.setNid(NUMBER_OF_COLONIES-1);
     g.changePlace(p);
 
     CHECK(isNidNeighbour(g, c1n));
@@ -296,7 +297,7 @@ TEST_CASE("Grille isFourmiNeighbour"){
     Coord c1 = Coord(5, 6);
     Coord c1n = Coord(5, 7);
 
-    Fourmi f = Fourmi(c1, 1);
+    Fourmi f = Fourmi(c1, 1, NUMBER_OF_COLONIES-1);
 
     Coord c2 = Coord(6, 9);
 
@@ -316,7 +317,7 @@ TEST_CASE("Grille getNeigbourNidPlace"){
     Coord c2 = Coord(6, 9);
 
     Place p = g.loadPlace(c1);
-    p.setNid();
+    p.setNid(NUMBER_OF_COLONIES-1);
     g.changePlace(p);
 
     CHECK(isNidNeighbour(g, c1n));
@@ -353,7 +354,7 @@ TEST_CASE("Grille getNeigbourSugarPlace"){
     Coord c1 = Coord(5, 6);
     Coord c1n = Coord(5, 7);
 
-    Fourmi f = Fourmi(c1, 1);
+    Fourmi f = Fourmi(c1, 1, NUMBER_OF_COLONIES-1);
 
     Coord c2 = Coord(6, 9);
 

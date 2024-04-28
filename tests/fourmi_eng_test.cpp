@@ -9,6 +9,7 @@
 #include <projet_fourmi/place.hpp>
 #include <projet_fourmi/grille.hpp>
 #include <projet_fourmi/consts.hpp>
+#include <projet_fourmi/team_consts.hpp>
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include <lib/doctest.h>
@@ -36,7 +37,7 @@ TEST_CASE("FourmiEng constructor"){
     vector<Fourmi> fourmis{{}};
 
     for(int i = 0; i < fourmis_coords.taille(); i++){
-        Fourmi f = Fourmi(fourmis_coords.ieme(i), i);
+        Fourmi f = Fourmi(fourmis_coords.ieme(i), i, NUMBER_OF_COLONIES-1);
         fourmis.push_back(f);
     }
 
@@ -85,7 +86,7 @@ TEST_CASE("FourmiEng loadFourmi"){
     vector<Fourmi> fourmis{{}};
 
     for(int i = 0; i < fourmis_coords.taille(); i++){
-        Fourmi f = Fourmi(fourmis_coords.ieme(i), i);
+        Fourmi f = Fourmi(fourmis_coords.ieme(i), i, NUMBER_OF_COLONIES-1);
         fourmis.push_back(f);
     }
 
@@ -93,7 +94,7 @@ TEST_CASE("FourmiEng loadFourmi"){
 
     CHECK_THROWS_AS_MESSAGE(f_eng.loadFourmi(12), invalid_argument, "Index is out of range of the list of fourmis!");
 
-    Fourmi fake_f = Fourmi(Coord(1, 3), 13);
+    Fourmi fake_f = Fourmi(Coord(1, 3), 13, NUMBER_OF_COLONIES-1);
     CHECK_THROWS_AS_MESSAGE(f_eng.loadFourmi(fake_f), invalid_argument, "The ant isn't in list of fourmis!");
 
     Fourmi f = f_eng.loadFourmi(1);
@@ -128,7 +129,7 @@ TEST_CASE("FourmiEng killFourmi, birthFourmi"){
     vector<Fourmi> fourmis{{}};
 
     for(int i = 0; i < fourmis_coords.taille(); i++){
-        Fourmi f = Fourmi(fourmis_coords.ieme(i), i);
+        Fourmi f = Fourmi(fourmis_coords.ieme(i), i, NUMBER_OF_COLONIES-1);
         fourmis.push_back(f);
     }
 
@@ -140,7 +141,7 @@ TEST_CASE("FourmiEng killFourmi, birthFourmi"){
     CHECK_FALSE(f_eng.loadFourmi(2).isAlive());
     CHECK(f_eng.getNumberOfFourmi() == 11);
 
-    Fourmi n_f = Fourmi(Coord(1, 13), 0);
+    Fourmi n_f = Fourmi(Coord(1, 13), 0, NUMBER_OF_COLONIES-1);
     Fourmi new_fourmi = f_eng.birthFourmi(n_f);
     CHECK(new_fourmi.getNum() == 12);
     CHECK(f_eng.getFourmis().size() == 13);

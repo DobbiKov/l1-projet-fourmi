@@ -1,5 +1,6 @@
 #include <projet_fourmi/grille.hpp>
 #include <projet_fourmi/consts.hpp>
+#include <projet_fourmi/team_consts.hpp>
 #include <iostream> 
 //remove 
 
@@ -14,13 +15,16 @@ void Grille::initialiser_places(){
     }
 }
 
-Grille::Grille():places{vector<Place>()}, nid{EnsCoord()}, amount_of_sugar{0}{
+Grille::Grille():places{vector<Place>()}, nids{vector<EnsCoord>(NUMBER_OF_COLONIES)}, amount_of_sugar_in_each_colony{vector<int>(NUMBER_OF_COLONIES)}{
     initialiser_places();
+    for(int i = 0; i < NUMBER_OF_COLONIES; i++){
+        amount_of_sugar_in_each_colony[i] = 0;
+    }
 }
 
 void Grille::poseSugarFromFourmi(Fourmi f){
     if(!f.porteSucre()) throw invalid_argument("This fourmi doesn't have any sugar!");
-    addSugar();
+    addSugar(f.getColony());
 }
 
 Place Grille::loadPlace(const Coord& c) const{
@@ -55,22 +59,23 @@ void Grille::decreasePheroSugar(){
     }
 }
 
-void setNid(Grille &g, EnsCoord ens){
-    g.setNid(ens);
+void setNid(Grille &g, EnsCoord ens, int colony){
+    g.setNid(ens, colony);
     for(int i = 0; i < ens.getCoords().size(); i++){
         Coord c = ens.ieme(i);
         Place p = g.loadPlace(c);
-        p.setNid();
+        p.setNid(colony);
         p.setPheroNid(1);
+        p.setPheroNidByColony(colony, 1);
         g.changePlace(p);
     }
 }
-void Grille::setNid(EnsCoord coords){
-    nid = coords;
+void Grille::setNid(EnsCoord coords, int colony){
+    nids[colony] = coords;
 }
 
-EnsCoord Grille::getNid() const{
-    return nid;
+EnsCoord Grille::getNid(int colony) const{
+    return nids[colony];
 }
 
 void setSugar(Grille& g, EnsCoord ens){
@@ -105,6 +110,17 @@ float getMaximalNeighbourPheroNid(Grille& g, Place p){
     return max;
 }
 
+float getMaximalNeighbourPheroNidByColony(Grille& g, Place p, int colony){
+    EnsCoord voisins = voisines(p.getCoords());
+    float max = 0;
+    for(Coord c: voisins.getCoords()){
+        Place p = g.loadPlace(c);
+        if(p.getPheroNidByColony(colony) > max)
+            max = p.getPheroNidByColony(colony);
+    }
+    return max;
+}
+
 void linearizePheroNid(Grille& g){
     for(int i = 0; i < TAILLEGRILLE; i++){
 
@@ -114,6 +130,15 @@ void linearizePheroNid(Grille& g){
 
             float max_vois = getMaximalNeighbourPheroNid(g, p);
             float new_intensity = max_vois - (1.0/TAILLEGRILLE);
+
+            for(int col = 0; col < NUMBER_OF_COLONIES; col++){
+                float max_vois_c = getMaximalNeighbourPheroNidByColony(g, p, col);
+                float new_intensity_c = max_vois_c - (1.0/TAILLEGRILLE);
+                p.setPheroNidByColony( 
+                    col,
+                    new_intensity_c > 0 ? new_intensity_c : 0
+                );
+            }
             p.setPheroNid( 
                 new_intensity > 0 ? new_intensity : 0
             );
@@ -122,9 +147,12 @@ void linearizePheroNid(Grille& g){
     }
 }
 
-Grille initializeGrille(vector<Fourmi> fourmis, EnsCoord sugar_coords, EnsCoord nid_coords){
+Grille initializeGrille(vector<Fourmi> fourmis, EnsCoord sugar_coords, int number_of_colonies){
     Grille g = Grille();
-    setNid(g, nid_coords);
+    for(int i = 0; i < number_of_colonies; i++){
+        EnsCoord nid_coords = NIDS_COORDS[i];
+        setNid(g, nid_coords, i);
+    }
     setSugar(g, sugar_coords);
     setFourmis(g, fourmis);
 
@@ -165,13 +193,13 @@ vector<Place> loadPlacesByCoords(const Grille &g, EnsCoord ens){
 }
 
 Place getNextRandomPlaceToGo(const Fourmi &f, const Grille &g){
-        //gets all the neighbour coords, remove all non-empty places
-        EnsCoord vois = voisines(f.getCoords());
-        vector<Place> poss_moves = emptyPlaces(loadPlacesByCoords(g, vois));
-        int rand_moves_idx = rand() % poss_moves.size();
-        //get the random one from the possible places
-        Place move = poss_moves[rand_moves_idx];
-        return move;
+    //gets all the neighbour coords, remove all non-empty places
+    EnsCoord vois = voisines(f.getCoords());
+    vector<Place> poss_moves = emptyPlaces(loadPlacesByCoords(g, vois));
+    int rand_moves_idx = rand() % poss_moves.size();
+    //get the random one from the possible places
+    Place move = poss_moves[rand_moves_idx];
+    return move;
 }
 
 bool isNidNeighbour(const Grille &g, Coord c){
@@ -231,7 +259,6 @@ Place getNeigbourFourmiPlace(const Grille &g, Coord c){
 
 Place getRandomEmptyPlace(const Grille &g){
     Place p(Coord(0, 0));
-    p.setNid();
     do{
         int rn = rand() % g.numOfPlaces();
         p = g.loadPlaceById(rn);

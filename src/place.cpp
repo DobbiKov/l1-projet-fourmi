@@ -3,34 +3,47 @@
 #include <projet_fourmi/place.hpp>
 #include <projet_fourmi/fourmi.hpp>
 #include <projet_fourmi/consts.hpp>
+#include <projet_fourmi/team_consts.hpp>
 
 using namespace std;
 
-Place::Place(Coord c):fourmi_id{-1}, phero_sugar{0}, phero_nid{0}, coords{c}, sugar{0}, has_nid{false} {}
+Place::Place(Coord c):fourmi_id{-1}, phero_sugar_by_colony{vector<float>(NUMBER_OF_COLONIES)}, phero_nid{0}, phero_nid_by_colony{vector<float>(NUMBER_OF_COLONIES)}, coords{c}, sugar{0}, colony_nid{-1} {
+    for(int i = 0; i < NUMBER_OF_COLONIES; i++){
+        phero_nid_by_colony[i] = 0.0f;
+        phero_sugar_by_colony[i] = 0.0f;
+    }
+}
 
 Coord Place::getCoords() const{
     return coords;
 }
 
-float Place::getPheroSugar() const{
-    return phero_sugar;
+float Place::getPheroSugar(int colony) const{
+    return phero_sugar_by_colony[colony];
 }
 
 float Place::getPheroNid() const{
     return phero_nid;
 }
+float Place::getPheroNidByColony(int colony) const{
+    return phero_nid_by_colony[colony];
+}
 int Place::getFourmiID() const{
     return fourmi_id;
+}
+
+int Place::getColonyId() const{
+    return colony_nid;
 }
 
 bool Place::containSugar() const{
     return sugar > 0;
 }
 bool Place::containNid() const{
-    return has_nid;
+    return colony_nid != -1;
 }
-bool Place::estSurUnePiste() const{
-    return phero_sugar > 0;
+bool Place::estSurUnePiste(int colony) const{
+    return phero_sugar_by_colony[colony] > 0;
 }
 
 void Place::setSugar(){
@@ -47,10 +60,10 @@ void Place::removeSugar(){
         sugar = 0;
 }
 
-void Place::setNid(){
+void Place::setNid(int colony_id){
     if(!isEmpty())
         throw runtime_error("The place isn't empty!");
-    has_nid = true;
+    colony_nid = colony_id;
 }
 
 void Place::setFourmi(Fourmi f){
@@ -71,15 +84,21 @@ void Place::setPheroNid(float intensity){
     phero_nid = intensity;
 }
 
-void Place::setPheroSugar(){
-    phero_sugar = MAX_PHERO_SUGAR_INTENSITY;
+void Place::setPheroNidByColony(int colony, float intensity){
+    phero_nid_by_colony[colony] = intensity;
+}
+
+void Place::setPheroSugar(int colony){
+    phero_sugar_by_colony[colony] = MAX_PHERO_SUGAR_INTENSITY;
 }
 
 void Place::decreasePheroSugar(){
-    if(phero_sugar == 0) return;
-    phero_sugar -= AMOUT_OF_PHERO_SUGAR_TO_REMOVE;
-    if(phero_sugar < 0)
-        phero_sugar = 0;
+    for(int i = 0; i < NUMBER_OF_COLONIES; i++){
+        if(phero_sugar_by_colony[i] == 0) continue;
+        phero_sugar_by_colony[i] -= AMOUT_OF_PHERO_SUGAR_TO_REMOVE;
+        if(phero_sugar_by_colony[i] < 0)
+            phero_sugar_by_colony[i] = 0;
+    }
 }
 
 bool Place::isEmpty() const{
@@ -106,12 +125,18 @@ bool isTheClosestNid(const Place& p1, const Place& p2){
 bool isTheFarestNid(const Place& p1, const Place& p2){
     return p1.getPheroNid() <= p2.getPheroNid();
 }
-
-bool isTheClosestSugar(const Place& p1, const Place& p2){
-    return p1.getPheroSugar() >= p2.getPheroSugar();
+bool isTheClosestNidByColony(const Place& p1, const Place& p2, int colony){
+    return p1.getPheroNidByColony(colony) >= p2.getPheroNidByColony(colony);
 }
-bool isTheFarestSugar(const Place& p1, const Place& p2){
-    return p1.getPheroSugar() <= p2.getPheroSugar();
+bool isTheFarestNidByColony(const Place& p1, const Place& p2, int colony){
+    return p1.getPheroNidByColony(colony) <= p2.getPheroNidByColony(colony);
+}
+
+bool isTheClosestSugar(const Place& p1, const Place& p2, int colony){
+    return p1.getPheroSugar(colony) >= p2.getPheroSugar(colony);
+}
+bool isTheFarestSugar(const Place& p1, const Place& p2, int colony){
+    return p1.getPheroSugar(colony) <= p2.getPheroSugar(colony);
 }
 
 Place closestPlaceToTheNid(vector<Place> places){
@@ -137,7 +162,30 @@ Place closestPlaceToTheNid(vector<Place> places){
     return places[0];
 }
 
-Place closestPlaceToTheSugar(vector<Place> places){
+Place closestPlaceToTheNidByColony(vector<Place> places, int colony){
+    int count = places.size()-1;
+    while(places.size() > 1){
+        if(count == 0) count = places.size()-1;
+        //if the place isn't empty, the fourmi can't go there, we remove this place
+        if(!places[count].isEmpty()){
+            swap(places[count], places[places.size()-1]);
+            places.pop_back();
+            count--;
+            continue;
+        }
+        if(isTheFarestNidByColony(places[count], places[count-1], colony)){
+            swap(places[count], places[places.size()-1]);
+            places.pop_back();
+        }else{
+            swap(places[count-1], places[places.size()-1]);
+            places.pop_back();
+        }
+        count--;
+    }
+    return places[0];
+}
+
+Place closestPlaceToTheSugar(vector<Place> places, int colony){
     int count = places.size()-1;
     while(places.size() > 1){
         if(count == 0) count = places.size()-1;
@@ -149,7 +197,7 @@ Place closestPlaceToTheSugar(vector<Place> places){
             continue;
         }
 
-        if(isTheFarestSugar(places[count], places[count-1]) && isTheClosestNid(places[count], places[count-1])){
+        if(isTheFarestSugar(places[count], places[count-1], colony) && isTheClosestNidByColony(places[count], places[count-1], colony)){
             swap(places[count], places[places.size()-1]);
             places.pop_back();
         }else{

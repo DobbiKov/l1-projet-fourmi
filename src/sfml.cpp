@@ -7,6 +7,7 @@
 #include <projet_fourmi/consts.hpp>
 #include <projet_fourmi/fourmi.hpp>
 #include <projet_fourmi/fourmi_eng.hpp>
+#include <projet_fourmi/team_consts.hpp>
 #include "time.h"
 
 void makeGameStep(FourmiEng &f_eng, Grille &g, int &game_count);
@@ -27,9 +28,14 @@ sf::RectangleShape draw_empty_square(int row, int column, const Place &p, float 
     int alpha = (int)(p.getPheroNid()*100);
     rectangle.setFillColor(sf::Color(120, 120, 120, alpha));
 
-    if(p.estSurUnePiste()){
-        int phero_sug_alpha = p.getPheroSugar();
-        rectangle.setFillColor(sf::Color(0, 0, 255, phero_sug_alpha));
+    for(int i = 0; i < NUMBER_OF_COLONIES; i++){
+        if(p.estSurUnePiste(i)){
+            int color_r = TEAMS_COLORS[p.getColonyId()][0];
+            int color_g = TEAMS_COLORS[p.getColonyId()][1];
+            int color_b = TEAMS_COLORS[p.getColonyId()][2];
+            int phero_sug_alpha = (int)(p.getPheroSugar(i)*50);
+            rectangle.setFillColor(sf::Color(color_r, color_g, color_b, phero_sug_alpha));
+        }
     }
     rectangle.setPosition(sf::Vector2f(scale*row, scale*column));
 
@@ -37,7 +43,13 @@ sf::RectangleShape draw_empty_square(int row, int column, const Place &p, float 
 }
 sf::RectangleShape draw_nid(int row, int column, const Place &p, float color=12.0){
     sf::RectangleShape rectangle(sf::Vector2f(scale, scale));
-    rectangle.setFillColor(sf::Color::Yellow);
+
+    int color_r = TEAMS_COLORS[p.getColonyId()][0];
+    int color_g = TEAMS_COLORS[p.getColonyId()][1];
+    int color_b = TEAMS_COLORS[p.getColonyId()][2];
+
+    rectangle.setFillColor(sf::Color(color_r, color_g, color_b, 255));
+
     rectangle.setPosition(sf::Vector2f(scale*row, scale*column));
 
     return rectangle;
@@ -46,10 +58,18 @@ sf::RectangleShape draw_nid(int row, int column, const Place &p, float color=12.
 sf::CircleShape draw_fourmi(int row, int column, Fourmi f, float color=12.0){
     sf::CircleShape triangle(scale/2, 3);
 
-    triangle.setFillColor(sf::Color::Green);
-    if(f.searchingSugar()){
-        triangle.setFillColor(sf::Color::Red);
-    }
+    int color_r = TEAMS_COLORS[f.getColony()][0];
+    int color_g = TEAMS_COLORS[f.getColony()][1];
+    int color_b = TEAMS_COLORS[f.getColony()][2];
+    // sf::Color color = sf::Color(color_r, color_g, color_b, 255);
+
+
+    triangle.setFillColor(
+        sf::Color(color_r, color_g, color_b, 255)
+    );
+    // if(f.searchingSugar()){
+    //     triangle.setFillColor(sf::Color::Red);
+    // }
     triangle.setPosition(sf::Vector2f(scale*row, scale*column));
 
     return triangle;
@@ -63,8 +83,8 @@ sf::CircleShape draw_sugar(int row, int column, float color=12.0){
     return circle;
 }
 
-void birthNewFourmi(FourmiEng &f_eng, Grille &g){
-    EnsCoord coords_around_nid = coordsAroundNid(g.getNid());
+void birthNewFourmi(FourmiEng &f_eng, Grille &g, int colony){
+    EnsCoord coords_around_nid = coordsAroundNid(g.getNid(colony));
     vector<Place> places = emptyPlaces(loadPlacesByCoords(g, coords_around_nid));
 
     if(places.size() == 0) return; //if there's no empty places
@@ -72,7 +92,7 @@ void birthNewFourmi(FourmiEng &f_eng, Grille &g){
     int idx = rand() % places.size();
     Place new_p = places[idx];
 
-    Fourmi f = Fourmi(new_p.getCoords(), 0);
+    Fourmi f = Fourmi(new_p.getCoords(), 0, colony);
 
     Fourmi new_f = f_eng.birthFourmi(f);
 
@@ -80,7 +100,7 @@ void birthNewFourmi(FourmiEng &f_eng, Grille &g){
 
     g.changePlace(new_p);
     areFourmiGrilleCoherent(g, new_f);
-    g.descreaseAmountOfSugar(AMOUT_OF_SUGAR_FOR_NEW_FOURMI);
+    g.descreaseAmountOfSugar(colony, AMOUT_OF_SUGAR_FOR_NEW_FOURMI);
 }
 
 
@@ -92,7 +112,7 @@ void makeGameStep(FourmiEng &f_eng, Grille &g, int &game_count){
     for(Fourmi f: f_eng.getFourmis()){
         if(f.porteSucre()){
             Place p = g.loadPlace(f.getCoords());
-            p.setPheroSugar();
+            p.setPheroSugar(f.getColony());
             g.changePlace(p);
         }
         if(f.goingToTheNid()){
@@ -108,7 +128,7 @@ void makeGameStep(FourmiEng &f_eng, Grille &g, int &game_count){
                 makeFourmiTakeSugar(f, f_eng, g);
                 continue;
             }
-            if(g.loadPlace(f.getCoords()).estSurUnePiste()){
+            if(g.loadPlace(f.getCoords()).estSurUnePiste(f.getColony())){
                 makeMoveToThePheroSugarFourmi(f, f_eng, g);
                 continue;
             }
@@ -117,8 +137,11 @@ void makeGameStep(FourmiEng &f_eng, Grille &g, int &game_count){
         }
         // makeRandomMoveFourmi(f, fourmis, g);
     }
-    if(g.getAmountOfSugar() >= AMOUT_OF_SUGAR_FOR_NEW_FOURMI){
-        birthNewFourmi(f_eng, g);
+
+    for(int i = 0; i < NUMBER_OF_COLONIES; i++){
+        if(g.getAmountOfSugar(i) >= AMOUT_OF_SUGAR_FOR_NEW_FOURMI){
+            birthNewFourmi(f_eng, g, i);
+        }
     }
     game_count++;
 }
@@ -139,13 +162,13 @@ void makeFourmiPutSugar(Fourmi f, FourmiEng &f_eng, Grille &g){
 
 void makeMoveToTheNidFourmi(Fourmi f, FourmiEng &f_eng, Grille &g){
     vector<Place> near_places = emptyPlaces( loadPlacesByCoords( g, voisines(f.getCoords()) ) );
-    Place move = closestPlaceToTheNid(near_places);
+    Place move = closestPlaceToTheNidByColony(near_places, f.getColony());
     makeFourmiMoveToPlace(f, f_eng, g, move);
 }
 
 void makeMoveToThePheroSugarFourmi(Fourmi f, FourmiEng &f_eng, Grille &g){
     vector<Place> near_places = emptyPlaces( loadPlacesByCoords( g, voisines(f.getCoords()) ) );
-    Place move = closestPlaceToTheSugar(near_places);
+    Place move = closestPlaceToTheSugar(near_places, f.getColony());
     makeFourmiMoveToPlace(f, f_eng, g, move);  
 }
 
@@ -199,13 +222,6 @@ int main()
 {
     srand (time(NULL));
     // initial grid
-    vector<Coord> nid_coords{{
-        Coord(4, 7),
-        Coord(4, 8),
-        Coord(5, 7),
-        Coord(5, 8)
-    }};
-    EnsCoord nid_ens = EnsCoord(nid_coords);
 
     vector<Coord> sugar_coords{{
         // Coord(2, 7),
@@ -215,15 +231,21 @@ int main()
     }};
     EnsCoord sugar_ens = EnsCoord(sugar_coords);
 
-    EnsCoord fourmis_coords = coordsAroundNid(nid_ens);
-    vector<Fourmi> fourmis{{}};
 
-    for(int i = 0; i < fourmis_coords.taille(); i++){
-        Fourmi f = Fourmi(fourmis_coords.ieme(i), i);
-        fourmis.push_back(f);
+    int f_id_count = 0;
+    vector<Fourmi> fourmis{{}};
+    for(int colony = 0; colony < NUMBER_OF_COLONIES; colony++){
+        EnsCoord fourmis_coords = coordsAroundNid(NIDS_COORDS[colony]);
+
+        for(int i = 0; i < fourmis_coords.taille(); i++){
+            Fourmi f = Fourmi(fourmis_coords.ieme(i), f_id_count, colony);
+            fourmis.push_back(f);
+            f_id_count++;
+        }
     }
+
     FourmiEng f_eng = FourmiEng(fourmis);
-    Grille grille = initializeGrille(f_eng.getFourmis(), sugar_ens, nid_ens);
+    Grille grille = initializeGrille(f_eng.getFourmis(), sugar_ens, NUMBER_OF_COLONIES);
     int GAME_COUNT = 1;
 
 
@@ -235,12 +257,27 @@ int main()
     sf::Font font = load_font();
 
     string text_for_game_count;
-    string text_for_amount_of_sugar;
     string text_for_number_of_fourmis;
 
-    sf::Text game_count_text = create_text((TAILLEGRILLE+1)*scale, 50.0f, font);
-    sf::Text amoun_of_sugar_text = create_text((TAILLEGRILLE+1)*scale, 70.0f, font);
-    sf::Text number_of_fourmis_text = create_text((TAILLEGRILLE+1)*scale, 90.0f, font);
+    float win_coords = 50.0f;
+    float win_coords_step = 20.0f;
+    sf::Text game_count_text = create_text((TAILLEGRILLE+1)*scale, win_coords, font);
+    win_coords += win_coords_step;
+
+    sf::Text number_of_fourmis_text = create_text((TAILLEGRILLE+1)*scale, win_coords, font);
+    win_coords += win_coords_step;
+
+    vector<sf::Text> amount_of_sugar_texts(NUMBER_OF_COLONIES);
+    for(int i = 0; i < NUMBER_OF_COLONIES; i++){
+        amount_of_sugar_texts[i] = create_text((TAILLEGRILLE+1)*scale, win_coords, font);
+        win_coords += win_coords_step;
+    }
+
+    vector<sf::Text> number_of_fourmis_texts(NUMBER_OF_COLONIES);
+    for(int i = 0; i < NUMBER_OF_COLONIES; i++){
+        number_of_fourmis_texts[i] = create_text((TAILLEGRILLE+1)*scale, win_coords, font);
+        win_coords += win_coords_step;
+    }
 
 
     while (window.isOpen()) {
@@ -266,9 +303,15 @@ int main()
         game_count_text.setString(text_for_game_count);
         window.draw(game_count_text);
 
-        text_for_amount_of_sugar = "Amount of sugar: " + to_string(grille.getAmountOfSugar());
-        amoun_of_sugar_text.setString(text_for_amount_of_sugar);
-        window.draw(amoun_of_sugar_text);
+        for(int i = 0; i < NUMBER_OF_COLONIES; i++){
+            string text_for_amount_of_sugar = "Amount of sugar in colony " + to_string(i) + " " + to_string(grille.getAmountOfSugar(i));
+            amount_of_sugar_texts[i].setString(text_for_amount_of_sugar);
+            window.draw(amount_of_sugar_texts[i]);
+
+            string text_for_number_of_fourmis_c = "Number of fourmis in colony " + to_string(i) + " " + to_string(f_eng.getNumberOfFourmiInColony(i));
+            number_of_fourmis_texts[i].setString(text_for_number_of_fourmis_c);
+            window.draw(number_of_fourmis_texts[i]);
+        }
 
         text_for_number_of_fourmis = "Number of fourmis: " + to_string(f_eng.getNumberOfFourmi());
         number_of_fourmis_text.setString(text_for_number_of_fourmis);

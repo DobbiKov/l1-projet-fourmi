@@ -9,10 +9,12 @@ private:
     int num;
     bool porte_sucre;
     bool is_alive;
+    int colony;
 public: 
-    Fourmi(Coord c, int id);
+    Fourmi(Coord c, int id, int colony);
     Coord getCoords() const;
     int getNum() const;
+    int getColony() const;
     bool isAlive() const;
     bool porteSucre() const;
     void prendSucre();

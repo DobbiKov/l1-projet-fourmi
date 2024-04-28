@@ -8,6 +8,7 @@
 #include <projet_fourmi/place.hpp>
 #include <projet_fourmi/grille.hpp>
 #include <projet_fourmi/consts.hpp>
+#include <projet_fourmi/team_consts.hpp>
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include <lib/doctest.h>
@@ -16,7 +17,7 @@ using namespace std;
 
 TEST_SUITE_BEGIN("Fourmi");
 TEST_CASE("Fourmi constructor"){
-    Fourmi f = Fourmi(Coord(1, 2), 1);
+    Fourmi f = Fourmi(Coord(1, 2), 1, NUMBER_OF_COLONIES-1);
     CHECK(f.getCoords() == Coord(1, 2));
     CHECK(f.getNum() == 1);
     CHECK_FALSE(f.porteSucre());
@@ -24,7 +25,7 @@ TEST_CASE("Fourmi constructor"){
 }
 
 TEST_CASE("Fourmi functions"){
-    Fourmi f = Fourmi(Coord(1, 2), 1);
+    Fourmi f = Fourmi(Coord(1, 2), 1, NUMBER_OF_COLONIES-1);
 
     f.prendSucre();
     CHECK(f.porteSucre() == true);
@@ -55,7 +56,7 @@ TEST_CASE("Fourmi fourmi list"){
 }
 
 TEST_CASE("Fourmi killFourmi"){
-    Fourmi f1 = Fourmi(Coord(1, 3), 1);
+    Fourmi f1 = Fourmi(Coord(1, 3), 1, 1);
 
     CHECK(f1.isAlive());
 
@@ -67,11 +68,11 @@ TEST_CASE("Fourmi killFourmi"){
 }
 
 TEST_CASE("Fourmi operator=="){
-    Fourmi f1 = Fourmi(Coord(1, 3), 1);
-    Fourmi f2 = Fourmi(Coord(1, 3), 2);
-    Fourmi f3 = Fourmi(Coord(2, 4), 1);
+    Fourmi f1 = Fourmi(Coord(1, 3), 1, 1);
+    Fourmi f2 = Fourmi(Coord(1, 3), 2, 1);
+    Fourmi f3 = Fourmi(Coord(2, 4), 1, 1);
 
-    Fourmi f4 = Fourmi(Coord(1, 3), 1);
+    Fourmi f4 = Fourmi(Coord(1, 3), 1, 1);
 
     CHECK(f1 == f4);
     CHECK_FALSE(f1 == f2);

@@ -11,11 +11,11 @@ using namespace std;
 class Grille{
 private:
     vector<Place> places;
-    EnsCoord nid;
+    vector<EnsCoord> nids;
     void initialiser_places();
-    int amount_of_sugar;
+    vector<int> amount_of_sugar_in_each_colony;
 
-    void addSugar() { amount_of_sugar += AMOUNT_OF_SUGAR_FOURMI_PORTE; }
+    void addSugar(int colony) { amount_of_sugar_in_each_colony[colony] += AMOUNT_OF_SUGAR_FOURMI_PORTE; }
 
 public:
     Grille();
@@ -28,17 +28,17 @@ public:
     //la taille du tableau places
     int numOfPlaces() const {return places.size(); }
 
-    int getAmountOfSugar() const { return amount_of_sugar; }
-    void descreaseAmountOfSugar(int amount) { amount_of_sugar -= amount; }
+    int getAmountOfSugar(int colony) const { return amount_of_sugar_in_each_colony[colony]; }
+    void descreaseAmountOfSugar(int colony, int amount) { amount_of_sugar_in_each_colony[colony] -= amount; }
     void poseSugarFromFourmi(Fourmi f);
-    void setNid(EnsCoord coords);
-    EnsCoord getNid() const;
+    void setNid(EnsCoord coords, int colony);
+    EnsCoord getNid(int colony) const;
 };
 
-void setNid(Grille& g, EnsCoord ens);
+void setNid(Grille& g, EnsCoord ens, int colony);
 void setSugar(Grille& g, EnsCoord ens);
 void setFourmis(Grille& g, vector<Fourmi> fourmis);
-Grille initializeGrille(vector<Fourmi> fourmis, EnsCoord sugar_coords, EnsCoord nid_coords);
+Grille initializeGrille(vector<Fourmi> fourmis, EnsCoord sugar_coords, int number_of_colonies);
 void linearizePheroNid(Grille& g);
 void decreasePheroSugar(Grille& g);
 

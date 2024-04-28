@@ -1,13 +1,18 @@
 #include <projet_fourmi/coord.hpp>
 #include <projet_fourmi/fourmi.hpp>
 #include <projet_fourmi/consts.hpp>
+#include <projet_fourmi/team_consts.hpp>
 
 using namespace std;
 
-Fourmi::Fourmi(Coord c, int id):coords{c}, num{id}, porte_sucre{false}, is_alive{true}{}
+Fourmi::Fourmi(Coord c, int id, int _colony):coords{c}, num{id}, porte_sucre{false}, is_alive{true}, colony{_colony}{}
 
 Coord Fourmi::getCoords() const{
     return coords;
+}
+
+int Fourmi::getColony() const{
+    return colony;
 }
 
 int Fourmi::getNum() const{
@@ -55,7 +60,7 @@ void Fourmi::deplace(Coord c){
 vector<Fourmi> createListFourmis(EnsCoord ens){
     vector<Fourmi> res = vector<Fourmi>();
     for(int i = 0; i < ens.getCoords().size(); i++){
-        Fourmi f = Fourmi(ens.getCoords()[i], i);
+        Fourmi f = Fourmi(ens.getCoords()[i], i, NUMBER_OF_COLONIES-1);
         res.push_back(f);
     }
     return res;
@@ -73,7 +78,8 @@ bool operator==(const Fourmi& f1, const Fourmi& f2){
         f1.isAlive() == f2.isAlive() && 
         f1.goingToTheNid() == f2.goingToTheNid() &&
         f1.searchingSugar() == f2.searchingSugar() &&
-        f1.porteSucre() == f2.porteSucre()
+        f1.porteSucre() == f2.porteSucre() &&
+        f1.getColony() == f2.getColony()
     );
 }
 

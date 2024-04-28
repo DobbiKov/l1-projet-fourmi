@@ -23,26 +23,29 @@ TEST_CASE("Constructor"){
 
     CHECK_FALSE(p.containNid());
     CHECK_FALSE(p.containSugar());
-    CHECK_FALSE(p.estSurUnePiste());
+    for(int i = 0; i < NUMBER_OF_COLONIES; i++){
+        CHECK_FALSE(p.estSurUnePiste(i));
+    }
     CHECK(p.isEmpty());
 }
 
 TEST_CASE("Place sugar"){
     Place p1 = Place(Coord(11, 4));
-    p1.setNid();
+    p1.setNid(NUMBER_OF_COLONIES-1);
     CHECK_THROWS_AS(p1.setSugar(), runtime_error);
     
     Place p = Place(Coord(3, 5));
     CHECK_FALSE(p.containSugar());
-    CHECK(p.getPheroSugar() == 0);
+    for(int i = 0; i < NUMBER_OF_COLONIES; i++)
+        CHECK(p.getPheroSugar(i) == 0);
     CHECK(p.isEmpty());
 
     p.setSugar();
     CHECK_FALSE(p.isEmpty());
 
-    CHECK_THROWS_AS(p1.setNid(), runtime_error);
+    CHECK_THROWS_AS(p1.setNid(NUMBER_OF_COLONIES-1), runtime_error);
     CHECK_THROWS_AS(p1.setSugar(), runtime_error);
-    CHECK_THROWS_AS(p1.setFourmi(Fourmi(Coord(0, 0), 1)), runtime_error);
+    CHECK_THROWS_AS(p1.setFourmi(Fourmi(Coord(0, 0), 1, NUMBER_OF_COLONIES-1)), runtime_error);
 
     CHECK(p.containSugar());
     p.removeSugar();
@@ -61,36 +64,39 @@ TEST_CASE("Place sugar"){
 
 TEST_CASE("Place phero sugar"){
     Place p = Place(Coord(3, 5));
-    CHECK(p.getPheroSugar() == 0);
-    CHECK_FALSE(p.estSurUnePiste());
+    CHECK(p.getPheroSugar(1) == 0);
+    for(int i = 0; i < NUMBER_OF_COLONIES; i++)
+        CHECK_FALSE(p.estSurUnePiste(i));
 
-    p.setPheroSugar();
-    CHECK(p.getPheroSugar() == MAX_PHERO_SUGAR_INTENSITY);
+    p.setPheroSugar(1);
+    CHECK(p.getPheroSugar(1) == MAX_PHERO_SUGAR_INTENSITY);
+    CHECK_FALSE(p.getPheroSugar(2) == MAX_PHERO_SUGAR_INTENSITY);
+    CHECK_FALSE(p.estSurUnePiste(2));
     p.decreasePheroSugar();
-    CHECK(p.getPheroSugar() == MAX_PHERO_SUGAR_INTENSITY - AMOUT_OF_PHERO_SUGAR_TO_REMOVE);
-    CHECK(p.estSurUnePiste());
-    while(p.getPheroSugar() > 0)
+    CHECK(p.getPheroSugar(1) == MAX_PHERO_SUGAR_INTENSITY - AMOUT_OF_PHERO_SUGAR_TO_REMOVE);
+    CHECK(p.estSurUnePiste(1));
+    while(p.getPheroSugar(1) > 0)
         p.decreasePheroSugar();
-    CHECK_FALSE(p.estSurUnePiste());
-    CHECK(p.getPheroSugar() == 0);
+    CHECK_FALSE(p.estSurUnePiste(1));
+    CHECK(p.getPheroSugar(1) == 0);
 }
 
 TEST_CASE("Place nid"){
     Place p1 = Place(Coord(11, 4));
     p1.setSugar();
-    CHECK_THROWS_AS(p1.setNid(), runtime_error);
+    CHECK_THROWS_AS(p1.setNid(NUMBER_OF_COLONIES-1), runtime_error);
 
     Place p = Place(Coord(3, 5));
     CHECK_FALSE(p.containNid());
     CHECK(p.isEmpty());
 
-    p.setNid();
+    p.setNid(NUMBER_OF_COLONIES-1);
     CHECK_FALSE(p.isEmpty());
     CHECK(p.containNid());
 
-    CHECK_THROWS_AS(p1.setNid(), runtime_error);
+    CHECK_THROWS_AS(p1.setNid(NUMBER_OF_COLONIES-1), runtime_error);
     CHECK_THROWS_AS(p1.setSugar(), runtime_error);
-    CHECK_THROWS_AS(p1.setFourmi(Fourmi(Coord(0, 0), 1)), runtime_error);
+    CHECK_THROWS_AS(p1.setFourmi(Fourmi(Coord(0, 0), 1, NUMBER_OF_COLONIES-1)), runtime_error);
 }
 
 TEST_CASE("Place phero nid"){
@@ -103,10 +109,10 @@ TEST_CASE("Place phero nid"){
 }
 
 TEST_CASE("Place fourmi"){
-    Fourmi f = Fourmi(Coord(1, 3), 1);
+    Fourmi f = Fourmi(Coord(1, 3), 1, NUMBER_OF_COLONIES-1);
 
     Place p1 = Place(Coord(2, 4));
-    Fourmi f1 = Fourmi(Coord(2, 4), 2);
+    Fourmi f1 = Fourmi(Coord(2, 4), 2, NUMBER_OF_COLONIES-1);
     CHECK_THROWS_AS(p1.setFourmi(f), invalid_argument);
     p1.setSugar();
     CHECK_THROWS_AS(p1.setFourmi(f1), runtime_error);
@@ -127,12 +133,12 @@ TEST_CASE("Place fourmi"){
 }
 
 TEST_CASE("Place replaceFourmi func"){
-    Fourmi f = Fourmi(Coord(1, 3), 1);
+    Fourmi f = Fourmi(Coord(1, 3), 1, NUMBER_OF_COLONIES-1);
     Place p = Place(Coord(1, 3));
 
 
     Place p1 = Place(Coord(1, 4));
-    Fourmi f1 = Fourmi(Coord(1, 4), 2);
+    Fourmi f1 = Fourmi(Coord(1, 4), 2, NUMBER_OF_COLONIES-1);
 
     p.setFourmi(f);
 
@@ -168,7 +174,7 @@ TEST_CASE("Empty places"){
     Place p4 = Place(Coord(5, 7));
     Place p5 = Place(Coord(3, 11));
     p2.setSugar();
-    p5.setNid();
+    p5.setNid(NUMBER_OF_COLONIES-1);
     vector<Place> places{{
         p1, p2, p3, p4, p5
     }};
@@ -213,20 +219,20 @@ TEST_CASE("the closest to the nid among places"){
 TEST_CASE("closest to the sugar"){
     Place p1 = Place(Coord(3, 5));
     Place p2 = Place(Coord(4, 5));
-    p1.setPheroSugar();
-    p2.setPheroSugar();
+    p1.setPheroSugar(1);
+    p2.setPheroSugar(1);
     p2.decreasePheroSugar();
-    CHECK(isTheClosestSugar(p1, p2));
-    CHECK_FALSE(isTheClosestSugar(p2, p1));
+    CHECK(isTheClosestSugar(p1, p2, 1));
+    CHECK_FALSE(isTheClosestSugar(p2, p1, 1));
 }
 TEST_CASE("closest to the sugar"){
     Place p1 = Place(Coord(3, 5));
     Place p2 = Place(Coord(4, 5));
-    p1.setPheroSugar();
-    p2.setPheroSugar();
+    p1.setPheroSugar(1);
+    p2.setPheroSugar(1);
     p2.decreasePheroSugar();
-    CHECK_FALSE(isTheFarestSugar(p1, p2));
-    CHECK(isTheFarestSugar(p2, p1));
+    CHECK_FALSE(isTheFarestSugar(p1, p2, 1));
+    CHECK(isTheFarestSugar(p2, p1, 1));
 }
 
 TEST_CASE("the closest to the sugar among places"){
@@ -235,11 +241,11 @@ TEST_CASE("the closest to the sugar among places"){
     Place p3 = Place(Coord(5, 5));
     Place p4 = Place(Coord(5, 7));
     Place p5 = Place(Coord(3, 11));
-    p1.setPheroSugar();
-    p2.setPheroSugar();
-    p3.setPheroSugar();
-    p4.setPheroSugar();
-    p5.setPheroSugar();
+    p1.setPheroSugar(1);
+    p2.setPheroSugar(1);
+    p3.setPheroSugar(1);
+    p4.setPheroSugar(1);
+    p5.setPheroSugar(1);
 
     p1.decreasePheroSugar();
     p1.decreasePheroSugar();
@@ -258,7 +264,7 @@ TEST_CASE("the closest to the sugar among places"){
     p5.decreasePheroSugar();
     p5.decreasePheroSugar();
     vector<Place> places{{p1, p2, p3, p4, p5}};
-    CHECK(closestPlaceToTheSugar(places).getCoords() == p4.getCoords());
+    CHECK(closestPlaceToTheSugar(places, 1).getCoords() == p4.getCoords());
 }
 
 TEST_SUITE_END();

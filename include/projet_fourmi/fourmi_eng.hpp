@@ -8,9 +8,11 @@
 class FourmiEng{
 private: 
     std::vector<Fourmi> fourmis;
+
     int number_of_fourmis;
+    vector<int> numbers_of_fourmi_by_colony;
 public:
-    FourmiEng(std::vector<Fourmi> _fourmis): fourmis{_fourmis}, number_of_fourmis{0}{ number_of_fourmis = fourmis.size(); }
+    FourmiEng(std::vector<Fourmi> _fourmis);
     std::vector<Fourmi> getFourmis() const { return fourmis; }
 
     Fourmi loadFourmi(int num) const;
@@ -18,6 +20,7 @@ public:
     void changeFourmi(Fourmi f);
 
     int getNumberOfFourmi() const { return number_of_fourmis; }
+    int getNumberOfFourmiInColony(int colony) const { return numbers_of_fourmi_by_colony[colony]; }
 
     void killFourmi(Fourmi &f);
     Fourmi birthFourmi(Fourmi f);
