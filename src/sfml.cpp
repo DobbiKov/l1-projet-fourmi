@@ -5,6 +5,8 @@
 #include <random>
 #include <format>
 #include <projet_fourmi/consts.hpp>
+#include <projet_fourmi/fourmi.hpp>
+#include <projet_fourmi/fourmi_eng.hpp>
 #include "time.h"
 
 void makeGameStep(vector<Fourmi>& fourmis, Grille &g);
@@ -195,6 +197,7 @@ int main()
         Fourmi f = Fourmi(fourmis_coords.ieme(i), i);
         fourmis.push_back(f);
     }
+    // FourmiEng f_eng = FourmiEng(fourmis);
     Grille grille = initializeGrille(fourmis, sugar_ens, nid_ens);
     int GAME_COUNT = 1;
 

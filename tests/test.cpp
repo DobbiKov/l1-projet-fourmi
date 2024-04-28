@@ -20,3 +20,4 @@ using namespace std;
 #include "fourmi_test.cpp"
 #include "place_test.cpp"
 #include "grille_test.cpp"
+#include "fourmi_eng_test.cpp"

@@ -60,3 +60,23 @@ vector<Fourmi> createListFourmis(EnsCoord ens){
     }
     return res;
 }
+
+void Fourmi::killFourmi(){
+    if(isAlive() == false) throw runtime_error("The ant is already dead!");
+    is_alive = false;
+}
+
+bool operator==(const Fourmi& f1, const Fourmi& f2){
+    return (
+        f1.getCoords() == f2.getCoords() && 
+        f1.getNum() == f2.getNum() && 
+        f1.isAlive() == f2.isAlive() && 
+        f1.goingToTheNid() == f2.goingToTheNid() &&
+        f1.searchingSugar() == f2.searchingSugar() &&
+        f1.porteSucre() == f2.porteSucre()
+    );
+}
+
+bool operator!=(const Fourmi& f1, const Fourmi& f2) {
+    return !(f1 == f2);
+}

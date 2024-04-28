@@ -54,4 +54,38 @@ TEST_CASE("Fourmi fourmi list"){
     }
 }
 
+TEST_CASE("Fourmi killFourmi"){
+    Fourmi f1 = Fourmi(Coord(1, 3), 1);
+
+    CHECK(f1.isAlive());
+
+    f1.killFourmi();
+
+    CHECK_FALSE(f1.isAlive());
+
+    CHECK_THROWS_AS_MESSAGE(f1.killFourmi(), runtime_error, "The ant is already dead!");
+}
+
+TEST_CASE("Fourmi operator=="){
+    Fourmi f1 = Fourmi(Coord(1, 3), 1);
+    Fourmi f2 = Fourmi(Coord(1, 3), 2);
+    Fourmi f3 = Fourmi(Coord(2, 4), 1);
+
+    Fourmi f4 = Fourmi(Coord(1, 3), 1);
+
+    CHECK(f1 == f4);
+    CHECK_FALSE(f1 == f2);
+    CHECK_FALSE(f1 == f3);
+    CHECK_FALSE(f2 == f3);
+
+    CHECK_FALSE(f1 != f4);
+    CHECK(f1 != f2);
+    CHECK(f1 != f3);
+    CHECK(f2 != f3);
+
+    f4.prendSucre();
+    CHECK_FALSE(f1 == f4);
+
+}
+
 TEST_SUITE_END();

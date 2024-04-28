@@ -20,9 +20,12 @@ public:
     void deplace(Coord c);
     bool searchingSugar() const;
     bool goingToTheNid() const;
-    bool killFourmi(){ is_alive = false; }
+    void killFourmi();
 };
 
 vector<Fourmi> createListFourmis(EnsCoord ens);
+
+bool operator==(const Fourmi& f1, const Fourmi& f2);
+bool operator!=(const Fourmi& f1, const Fourmi& f2);
 
 #endif

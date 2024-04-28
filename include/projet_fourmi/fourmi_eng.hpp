@@ -15,9 +15,9 @@ public:
 
     Fourmi loadFourmi(int num) const;
     Fourmi loadFourmi(Fourmi f) const;
-    void changeFourmi(const Fourmi &f);
+    void changeFourmi(Fourmi f);
 
-    int number_of_fourmis() const { return number_of_fourmis; }
+    int getNumberOfFourmi() const { return number_of_fourmis; }
 
     void killFourmi(Fourmi &f);
     Fourmi birthFourmi(Fourmi f);
