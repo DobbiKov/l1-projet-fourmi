@@ -11,6 +11,7 @@ using namespace std;
 class Grille{
 private:
     vector<Place> places;
+    EnsCoord nid;
     void initialiser_places();
     int amount_of_sugar;
 
@@ -28,7 +29,10 @@ public:
     int numOfPlaces() const {return places.size(); }
 
     int getAmountOfSugar() const { return amount_of_sugar; }
+    void descreaseAmountOfSugar(int amount) { amount_of_sugar -= amount; }
     void poseSugarFromFourmi(Fourmi f);
+    void setNid(EnsCoord coords);
+    EnsCoord getNid() const;
 };
 
 void setNid(Grille& g, EnsCoord ens);

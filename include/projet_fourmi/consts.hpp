@@ -18,6 +18,6 @@ const float scale = WINDOW_SIZE / (TAILLEGRILLE);
 const int GAME_SPEED = 5;
 const int NEW_SUGAR_APP_SPEED = 50;
 
-const int AMOUT_OF_SUGAR_FOR_NEW_FOURMI = AMOUNT_OF_SUGAR_TO_SET * 3;
+const int AMOUT_OF_SUGAR_FOR_NEW_FOURMI = AMOUNT_OF_SUGAR_TO_SET * 2;
 
 #endif

@@ -14,7 +14,7 @@ void Grille::initialiser_places(){
     }
 }
 
-Grille::Grille():places{vector<Place>()}, amount_of_sugar{0}{
+Grille::Grille():places{vector<Place>()}, nid{EnsCoord()}, amount_of_sugar{0}{
     initialiser_places();
 }
 
@@ -56,6 +56,7 @@ void Grille::decreasePheroSugar(){
 }
 
 void setNid(Grille &g, EnsCoord ens){
+    g.setNid(ens);
     for(int i = 0; i < ens.getCoords().size(); i++){
         Coord c = ens.ieme(i);
         Place p = g.loadPlace(c);
@@ -63,6 +64,13 @@ void setNid(Grille &g, EnsCoord ens){
         p.setPheroNid(1);
         g.changePlace(p);
     }
+}
+void Grille::setNid(EnsCoord coords){
+    nid = coords;
+}
+
+EnsCoord Grille::getNid() const{
+    return nid;
 }
 
 void setSugar(Grille& g, EnsCoord ens){
@@ -149,11 +157,11 @@ void areFourmiGrilleCoherent(const Grille &g, const Fourmi &f){
 }
 
 vector<Place> loadPlacesByCoords(const Grille &g, EnsCoord ens){
-        vector<Place> places{{}};
-        for(Coord c: ens.getCoords()){
-            places.push_back(g.loadPlace(c));
-        }  
-        return places;
+    vector<Place> places{{}};
+    for(Coord c: ens.getCoords()){
+        places.push_back(g.loadPlace(c));
+    }  
+    return places;
 }
 
 Place getNextRandomPlaceToGo(const Fourmi &f, const Grille &g){
