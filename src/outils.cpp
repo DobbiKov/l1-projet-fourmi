@@ -1,6 +1,7 @@
 #include <projet_fourmi/outils.hpp>
 #include <vector>
 #include <projet_fourmi/coord.hpp>
+#include <projet_fourmi/consts.hpp>
 
 using namespace std;
 

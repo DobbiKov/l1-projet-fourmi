@@ -2,10 +2,10 @@
 #define COORD_HPP
 
 #include <vector>
+#include <projet_fourmi/consts.hpp>
 
 using namespace std;
 
-const int TAILLEGRILLE = 25;
 
 class Coord{
 public:

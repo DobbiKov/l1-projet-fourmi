@@ -4,10 +4,9 @@
 #include <projet_fourmi/coord.hpp>
 #include <projet_fourmi/place.hpp>
 #include <projet_fourmi/fourmi.hpp>
+#include <projet_fourmi/consts.hpp>
 
 using namespace std;
-
-const int AMOUNT_OF_INIT_RAND_SUGAR = 4;
 
 class Grille{
 private:

@@ -4,13 +4,6 @@
 #include <projet_fourmi/coord.hpp>
 #include <projet_fourmi/fourmi.hpp>
 
-const int AMOUNT_OF_SUGAR_TO_SET = 60;
-const int AMOUT_OF_SUGAR_TO_REMOVE = 10;
-const int AMOUNT_OF_SUGAR_FOURMI_PORTE = AMOUT_OF_SUGAR_TO_REMOVE;
-
-const float MAX_PHERO_SUGAR_INTENSITY = 255;
-const float AMOUT_OF_PHERO_SUGAR_TO_REMOVE = 15;
-
 using namespace std;
 
 class Place{

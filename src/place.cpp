@@ -2,6 +2,7 @@
 #include <projet_fourmi/outils.hpp>
 #include <projet_fourmi/place.hpp>
 #include <projet_fourmi/fourmi.hpp>
+#include <projet_fourmi/consts.hpp>
 
 using namespace std;
 

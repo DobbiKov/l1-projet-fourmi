@@ -4,13 +4,8 @@
 #include <iostream>
 #include <random>
 #include <format>
+#include <projet_fourmi/consts.hpp>
 #include "time.h"
-
-const int WINDOW_SIZE = 1024;
-const int grid_size = TAILLEGRILLE;
-const float scale = WINDOW_SIZE / (TAILLEGRILLE);
-const int GAME_SPEED = 5;
-const int NEW_SUGAR_APP_SPEED = 50;
 
 void makeGameStep(vector<Fourmi>& fourmis, Grille &g);
 void makeRandomMoveFourmi(Fourmi f, vector<Fourmi>& fourmis, Grille &g);

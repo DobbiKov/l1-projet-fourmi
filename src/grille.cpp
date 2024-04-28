@@ -1,4 +1,5 @@
 #include <projet_fourmi/grille.hpp>
+#include <projet_fourmi/consts.hpp>
 #include <iostream> 
 //remove 
 
