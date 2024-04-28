@@ -1,7 +1,8 @@
 CXX=clang++
 PROJECT_BASE=projet_fourmi
 CXXFLAGS=-std=c++11 -Wall --include-directory=include --include-directory=./
-SFML_FLAGS=-I/opt/homebrew/Cellar/sfml/2.6.1/include -L/opt/homebrew/Cellar/sfml/2.6.1/lib -lsfml-graphics -lsfml-window -lsfml-system
+SFML_PATH=/opt/homebrew/Cellar/sfml
+SFML_FLAGS=-I$(SFML_PATH)/2.6.1/include -L$(SFML_PATH)/2.6.1/lib -lsfml-graphics -lsfml-window -lsfml-system
 INCLUDE_DIR=include/projet_fourmi
 SRC_DIR=src
 TEST_DIR=tests
