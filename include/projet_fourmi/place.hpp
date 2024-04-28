@@ -43,6 +43,7 @@ public:
 };
 
 void replaceFourmi(Fourmi& f, Place& from, Place& to);
+
 bool isTheClosestNid(const Place& p1, const Place& p2);
 bool isTheFarestNid(const Place& p1, const Place& p2);
 

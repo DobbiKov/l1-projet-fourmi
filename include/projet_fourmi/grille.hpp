@@ -51,8 +51,25 @@ void areFourmiGrilleCoherent(const Grille &g, const Fourmi &f);
 EnsCoord coordsAroundNid(EnsCoord ens_nid);
 
 /// returns the biggest intensity of the pheromons of the place among the neigbours
-float getMaximalNeighbourPheroNid(Grille& g, Place p);
+float getMaximalNeighbourPheroNid(const Grille& g, Place p);
 
+/// @brief returns maximal phero nid(of given colony) of places neighbouring to the given one
+/// @param g - the grid
+/// @param p - the place
+/// @param colony - the colony
+/// @return maximal intensity of pheromones of nid
+float getMaximalNeighbourPheroNidByColony(const Grille& g, Place p, int colony);
+
+/// @brief Functions tells whether the ant is placed near the nid
+/// @param f - fourmi
+/// @param g - grille
+/// @return true if the ant is near the nid of its colony and false in the other case
+bool isFourmiNearNid(const Fourmi &f, const Grille &g);
+
+/// @brief Gives the next random place for fourmi to go
+/// @param f - fourmi
+/// @param g - grille
+/// @return next random place
 Place getNextRandomPlaceToGo(const Fourmi &f, const Grille &g);
 
 /// return true if the nid is neighbour to the place in the given coordinates, false in the other case

@@ -1,3 +1,4 @@
+#include <projet_fourmi/outils.hpp>
 #include <projet_fourmi/grille.hpp>
 #include <projet_fourmi/consts.hpp>
 #include <projet_fourmi/team_consts.hpp>
@@ -99,7 +100,7 @@ void setFourmis(Grille& g, vector<Fourmi> fourmis){
 
 
 
-float getMaximalNeighbourPheroNid(Grille& g, Place p){
+float getMaximalNeighbourPheroNid(const Grille& g, Place p){
     EnsCoord voisins = voisines(p.getCoords());
     float max = 0;
     for(Coord c: voisins.getCoords()){
@@ -110,7 +111,7 @@ float getMaximalNeighbourPheroNid(Grille& g, Place p){
     return max;
 }
 
-float getMaximalNeighbourPheroNidByColony(Grille& g, Place p, int colony){
+float getMaximalNeighbourPheroNidByColony(const Grille& g, Place p, int colony){
     EnsCoord voisins = voisines(p.getCoords());
     float max = 0;
     for(Coord c: voisins.getCoords()){
@@ -270,4 +271,10 @@ void putSugarInRandomPlace(Grille &g){
     Place rp = getRandomEmptyPlace(g);
     rp.setSugar();
     g.changePlace(rp);
+}
+
+bool isFourmiNearNid(const Fourmi &f, const Grille &g){
+    // float max_int = getMaximalNeighbourPheroNidByColony(g, g.loadPlace(f.getCoords()), f.getColony());
+    float phero_nid_on_the_place = g.loadPlace( f.getCoords() ).getPheroNidByColony(f.getColony());
+    return float_equal(phero_nid_on_the_place, PHERO_NID_NEAR_NID);
 }

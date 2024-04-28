@@ -2,6 +2,7 @@
 #define CONSTS_HPP
 
 const int TAILLEGRILLE = 25;
+const float PHERO_NID_NEAR_NID = 1.0f - (1.0f/TAILLEGRILLE);
 
 const int AMOUNT_OF_SUGAR_TO_SET = 60;
 const int AMOUT_OF_SUGAR_TO_REMOVE = 10;

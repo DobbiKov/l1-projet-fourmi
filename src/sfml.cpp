@@ -33,8 +33,9 @@ sf::RectangleShape draw_empty_square(int row, int column, const Place &p, float 
             int color_r = TEAMS_COLORS[p.getColonyId()][0];
             int color_g = TEAMS_COLORS[p.getColonyId()][1];
             int color_b = TEAMS_COLORS[p.getColonyId()][2];
-            int phero_sug_alpha = (int)(p.getPheroSugar(i)*50);
+            int phero_sug_alpha = (int)(p.getPheroSugar(i)*100);
             rectangle.setFillColor(sf::Color(color_r, color_g, color_b, phero_sug_alpha));
+            break;
         }
     }
     rectangle.setPosition(sf::Vector2f(scale*row, scale*column));
@@ -116,7 +117,7 @@ void makeGameStep(FourmiEng &f_eng, Grille &g, int &game_count){
             g.changePlace(p);
         }
         if(f.goingToTheNid()){
-            if(isNidNeighbour(g, f.getCoords())){
+            if(isFourmiNearNid(f, g)){
                 makeFourmiPutSugar(f, f_eng, g);
                 continue;
             }
