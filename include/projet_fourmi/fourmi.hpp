@@ -20,6 +20,7 @@ public:
     void deplace(Coord c);
     bool searchingSugar() const;
     bool goingToTheNid() const;
+    bool killFourmi(){ is_alive = false; }
 };
 
 vector<Fourmi> createListFourmis(EnsCoord ens);
