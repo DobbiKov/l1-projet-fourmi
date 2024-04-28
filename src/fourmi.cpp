@@ -57,10 +57,10 @@ void Fourmi::deplace(Coord c){
     coords = c;
 }
 
-vector<Fourmi> createListFourmis(EnsCoord ens){
+vector<Fourmi> createListFourmis(EnsCoord ens, int colony){
     vector<Fourmi> res = vector<Fourmi>();
     for(int i = 0; i < ens.getCoords().size(); i++){
-        Fourmi f = Fourmi(ens.getCoords()[i], i, NUMBER_OF_COLONIES-1);
+        Fourmi f = Fourmi(ens.getCoords()[i], i, colony);
         res.push_back(f);
     }
     return res;

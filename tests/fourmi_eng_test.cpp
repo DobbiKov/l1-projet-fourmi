@@ -40,18 +40,25 @@ TEST_CASE("FourmiEng constructor"){
         Fourmi f = Fourmi(fourmis_coords.ieme(i), i, NUMBER_OF_COLONIES-1);
         fourmis.push_back(f);
     }
-
+    Fourmi f_1 = Fourmi(Coord(1, 1), 12, 1);
+    Fourmi f_1_2 = Fourmi(Coord(1, 2), 13, 1);
+    fourmis.push_back(f_1);
+    fourmis.push_back(f_1_2);
     FourmiEng f_eng = FourmiEng(fourmis);
 
     CHECK(f_eng.getNumberOfFourmi() == fourmis.size());
-    CHECK(f_eng.getNumberOfFourmi() == 12);
+    CHECK(f_eng.getNumberOfFourmi() == 14);
+    CHECK(f_eng.getNumberOfFourmiInColony(NUMBER_OF_COLONIES-1) == 12);
+    CHECK(f_eng.getNumberOfFourmiInColony(0) == 0);
+    CHECK(f_eng.getNumberOfFourmiInColony(1) == 2);
+
     vector<Fourmi> loaded_fourmis = f_eng.getFourmis();
     CHECK(loaded_fourmis.size() == fourmis.size());
     for(int i = 0; i < loaded_fourmis.size(); i++){
         CHECK(loaded_fourmis[i] == fourmis[i]);
     }
 
-    CHECK_THROWS_AS_MESSAGE(f_eng.loadFourmi(12), invalid_argument, "Index is out of range of the list of fourmis!");
+    CHECK_THROWS_AS_MESSAGE(f_eng.loadFourmi(15), invalid_argument, "Index is out of range of the list of fourmis!");
 
 
     Fourmi f = f_eng.loadFourmi(1);

@@ -22,6 +22,7 @@ TEST_CASE("Fourmi constructor"){
     CHECK(f.getNum() == 1);
     CHECK_FALSE(f.porteSucre());
     CHECK(f.isAlive() == true);
+    CHECK(f.getColony() == NUMBER_OF_COLONIES-1);
 }
 
 TEST_CASE("Fourmi functions"){
@@ -46,12 +47,13 @@ TEST_CASE("Fourmi fourmi list"){
         Coord(5, 6)
     }};
     EnsCoord ens = EnsCoord(coords);
-    vector<Fourmi> list_fourmis = createListFourmis(ens);
+    vector<Fourmi> list_fourmis = createListFourmis(ens, NUMBER_OF_COLONIES-1);
     CHECK(list_fourmis.size() == coords.size());
     for(int i = 0; i < coords.size(); i++){
         CHECK(list_fourmis[i].getCoords() == coords[i]);
         CHECK(list_fourmis[i].getCoords() == ens.getCoords()[i]);
         CHECK(list_fourmis[i].getNum() == i);
+        CHECK(list_fourmis[i].getColony() == NUMBER_OF_COLONIES-1);
     }
 }
 

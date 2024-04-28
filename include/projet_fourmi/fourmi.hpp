@@ -25,7 +25,7 @@ public:
     void killFourmi();
 };
 
-vector<Fourmi> createListFourmis(EnsCoord ens);
+vector<Fourmi> createListFourmis(EnsCoord ens, int colony);
 
 bool operator==(const Fourmi& f1, const Fourmi& f2);
 bool operator!=(const Fourmi& f1, const Fourmi& f2);
