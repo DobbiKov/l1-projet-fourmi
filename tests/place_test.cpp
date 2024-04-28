@@ -20,6 +20,10 @@ TEST_CASE("Constructor"){
     CHECK(p.getCoords() == Coord(3, 5));
     CHECK(p.getFourmiID() == -1);
     CHECK(p.getPheroNid() == 0);
+    CHECK(p.getColonyId() == -1);
+    for(int i = 0; i < NUMBER_OF_COLONIES; i++){
+        CHECK(p.getPheroSugar(i) == 0);
+    }
 
     CHECK_FALSE(p.containNid());
     CHECK_FALSE(p.containSugar());
@@ -32,6 +36,7 @@ TEST_CASE("Constructor"){
 TEST_CASE("Place sugar"){
     Place p1 = Place(Coord(11, 4));
     p1.setNid(NUMBER_OF_COLONIES-1);
+    CHECK_FALSE(p1.isEmpty());
     CHECK_THROWS_AS(p1.setSugar(), runtime_error);
     
     Place p = Place(Coord(3, 5));
@@ -69,12 +74,20 @@ TEST_CASE("Place phero sugar"){
         CHECK_FALSE(p.estSurUnePiste(i));
 
     p.setPheroSugar(1);
+    p.setPheroSugar(2);
     CHECK(p.getPheroSugar(1) == MAX_PHERO_SUGAR_INTENSITY);
-    CHECK_FALSE(p.getPheroSugar(2) == MAX_PHERO_SUGAR_INTENSITY);
-    CHECK_FALSE(p.estSurUnePiste(2));
-    p.decreasePheroSugar();
-    CHECK(p.getPheroSugar(1) == MAX_PHERO_SUGAR_INTENSITY - AMOUT_OF_PHERO_SUGAR_TO_REMOVE);
+    CHECK(p.getPheroSugar(2) == MAX_PHERO_SUGAR_INTENSITY);
+    CHECK_FALSE(p.getPheroSugar(0) == MAX_PHERO_SUGAR_INTENSITY);
+    CHECK_FALSE(p.estSurUnePiste(0));
+    CHECK(p.estSurUnePiste(2));
     CHECK(p.estSurUnePiste(1));
+
+    p.decreasePheroSugar();
+    CHECK(p.getPheroSugar(0) == 0);
+    CHECK(p.getPheroSugar(1) == MAX_PHERO_SUGAR_INTENSITY - AMOUT_OF_PHERO_SUGAR_TO_REMOVE);
+    CHECK(p.getPheroSugar(2) == MAX_PHERO_SUGAR_INTENSITY - AMOUT_OF_PHERO_SUGAR_TO_REMOVE);
+    CHECK(p.estSurUnePiste(1));
+    CHECK(p.estSurUnePiste(2));
     while(p.getPheroSugar(1) > 0)
         p.decreasePheroSugar();
     CHECK_FALSE(p.estSurUnePiste(1));
@@ -106,6 +119,15 @@ TEST_CASE("Place phero nid"){
     CHECK(p.getPheroNid() == 1);
     p.setPheroNid(0.587);
     CHECK(float_equal(p.getPheroNid(), 0.587));
+
+    CHECK(p.getPheroNidByColony(1) == 0);
+    CHECK(p.getPheroNidByColony(0) == 0);
+    p.setPheroNidByColony(1, 1);
+    CHECK(p.getPheroNidByColony(1) == 1);
+    CHECK_FALSE(p.getPheroNidByColony(0) == 1);
+    p.setPheroNidByColony(1, 0.587);
+    CHECK(float_equal(p.getPheroNidByColony(1), 0.587));
+    CHECK_FALSE(float_equal(p.getPheroNidByColony(0), 0.587));
 }
 
 TEST_CASE("Place fourmi"){
@@ -192,13 +214,47 @@ TEST_CASE("closest to the nid"){
     CHECK(isTheClosestNid(p1, p2));
     CHECK_FALSE(isTheClosestNid(p2, p1));
 }
-TEST_CASE("closest to the nid"){
+TEST_CASE("farest to the nid"){
     Place p1 = Place(Coord(3, 5));
     Place p2 = Place(Coord(4, 5));
     p1.setPheroNid(0.8f);
     p2.setPheroNid(0.4f);
     CHECK_FALSE(isTheFarestNid(p1, p2));
     CHECK(isTheFarestNid(p2, p1));
+}
+
+TEST_CASE("closest to the nid by colony"){
+    Place p1 = Place(Coord(3, 5));
+    Place p2 = Place(Coord(4, 5));
+    int colony = 1;
+    int s_colony = 2;
+    p1.setPheroNidByColony(colony, 0.8f);
+    p2.setPheroNidByColony(colony, 0.4f);
+
+    p1.setPheroNidByColony(s_colony, 0.4f);
+    p2.setPheroNidByColony(s_colony, 0.8f);
+    CHECK(isTheClosestNidByColony(p1, p2, colony));
+    CHECK_FALSE(isTheClosestNidByColony(p2, p1, colony));
+
+    CHECK(isTheClosestNidByColony(p2, p1, s_colony));
+    CHECK_FALSE(isTheClosestNidByColony(p1, p2, s_colony));
+}
+TEST_CASE("farest to the nid by colony"){
+    Place p1 = Place(Coord(3, 5));
+    Place p2 = Place(Coord(4, 5));
+    int colony = 1;
+    int s_colony = 2;
+    p1.setPheroNidByColony(colony, 0.8f);
+    p2.setPheroNidByColony(colony, 0.4f);
+
+    p1.setPheroNidByColony(s_colony, 0.4f);
+    p2.setPheroNidByColony(s_colony, 0.8f);
+
+    CHECK_FALSE(isTheFarestNidByColony(p1, p2, colony));
+    CHECK(isTheFarestNidByColony(p2, p1, colony));
+     
+    CHECK(isTheFarestNidByColony(p1, p2, s_colony));
+    CHECK_FALSE(isTheFarestNidByColony(p2, p1, s_colony));
 }
 
 TEST_CASE("the closest to the nid among places"){
@@ -216,36 +272,65 @@ TEST_CASE("the closest to the nid among places"){
     CHECK(closestPlaceToTheNid(places).getCoords() == p4.getCoords());
 }
 
-TEST_CASE("closest to the sugar"){
-    Place p1 = Place(Coord(3, 5));
-    Place p2 = Place(Coord(4, 5));
-    p1.setPheroSugar(1);
-    p2.setPheroSugar(1);
-    p2.decreasePheroSugar();
-    CHECK(isTheClosestSugar(p1, p2, 1));
-    CHECK_FALSE(isTheClosestSugar(p2, p1, 1));
-}
-TEST_CASE("closest to the sugar"){
-    Place p1 = Place(Coord(3, 5));
-    Place p2 = Place(Coord(4, 5));
-    p1.setPheroSugar(1);
-    p2.setPheroSugar(1);
-    p2.decreasePheroSugar();
-    CHECK_FALSE(isTheFarestSugar(p1, p2, 1));
-    CHECK(isTheFarestSugar(p2, p1, 1));
-}
+TEST_CASE("the closest to the nid among places by colony"){
+    int colony = 1;
+    int s_colony = 2;
 
-TEST_CASE("the closest to the sugar among places"){
     Place p1 = Place(Coord(3, 5));
     Place p2 = Place(Coord(4, 5));
     Place p3 = Place(Coord(5, 5));
     Place p4 = Place(Coord(5, 7));
     Place p5 = Place(Coord(3, 11));
-    p1.setPheroSugar(1);
-    p2.setPheroSugar(1);
-    p3.setPheroSugar(1);
-    p4.setPheroSugar(1);
-    p5.setPheroSugar(1);
+    p1.setPheroNidByColony(colony, 0.8f);
+    p2.setPheroNidByColony(colony, 0.4f);
+    p3.setPheroNidByColony(colony, 0.5f);
+    p4.setPheroNidByColony(colony, 0.9f);
+    p5.setPheroNidByColony(colony, 0.1f);
+
+    p1.setPheroNidByColony(s_colony, 0.8f);
+    p2.setPheroNidByColony(s_colony, 0.85f);
+    p3.setPheroNidByColony(s_colony, 0.5f);
+    p4.setPheroNidByColony(s_colony, 0.7f);
+    p5.setPheroNidByColony(s_colony, 0.1f);
+    vector<Place> places{{p1, p2, p3, p4, p5}};
+    CHECK(closestPlaceToTheNidByColony(places, colony).getCoords() == p4.getCoords());
+    CHECK_FALSE(closestPlaceToTheNidByColony(places, s_colony).getCoords() == p4.getCoords());
+    CHECK(closestPlaceToTheNidByColony(places, s_colony).getCoords() == p2.getCoords());
+}
+
+TEST_CASE("closest to the sugar"){
+    int colony = 1;
+    Place p1 = Place(Coord(3, 5));
+    Place p2 = Place(Coord(4, 5));
+    p1.setPheroSugar(colony);
+    p2.setPheroSugar(colony);
+    p2.decreasePheroSugar();
+    CHECK(isTheClosestSugar(p1, p2, colony));
+    CHECK_FALSE(isTheClosestSugar(p2, p1, colony));
+}
+TEST_CASE("farest to the sugar"){
+    int colony = 1;
+    Place p1 = Place(Coord(3, 5));
+    Place p2 = Place(Coord(4, 5));
+    p1.setPheroSugar(colony);
+    p2.setPheroSugar(colony);
+    p2.decreasePheroSugar();
+    CHECK_FALSE(isTheFarestSugar(p1, p2, colony));
+    CHECK(isTheFarestSugar(p2, p1, colony));
+}
+
+TEST_CASE("the closest to the sugar among places"){
+    int colony = 1;
+    Place p1 = Place(Coord(3, 5));
+    Place p2 = Place(Coord(4, 5));
+    Place p3 = Place(Coord(5, 5));
+    Place p4 = Place(Coord(5, 7));
+    Place p5 = Place(Coord(3, 11));
+    p1.setPheroSugar(colony);
+    p2.setPheroSugar(colony);
+    p3.setPheroSugar(colony);
+    p4.setPheroSugar(colony);
+    p5.setPheroSugar(colony);
 
     p1.decreasePheroSugar();
     p1.decreasePheroSugar();

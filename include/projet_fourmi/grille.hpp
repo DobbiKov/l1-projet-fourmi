@@ -64,7 +64,7 @@ float getMaximalNeighbourPheroNidByColony(const Grille& g, Place p, int colony);
 /// @param f - fourmi
 /// @param g - grille
 /// @return true if the ant is near the nid of its colony and false in the other case
-bool isFourmiNearNid(const Fourmi &f, const Grille &g);
+bool isFourmiNearItsNid(const Fourmi &f, const Grille &g);
 
 /// @brief Gives the next random place for fourmi to go
 /// @param f - fourmi
@@ -72,8 +72,11 @@ bool isFourmiNearNid(const Fourmi &f, const Grille &g);
 /// @return next random place
 Place getNextRandomPlaceToGo(const Fourmi &f, const Grille &g);
 
-/// return true if the nid is neighbour to the place in the given coordinates, false in the other case
-bool isNidNeighbour(const Grille &g, Coord c);
+/// @brief says whether the place in the given coordinates has a nid as a neighbour, false in the other case
+/// @param g grille
+/// @param c coordinates
+/// @return true if there's a nid as a neighbour, false in the other case
+bool isFourmiNearNid(const Grille &g, Coord c);
 
 /// return true if a sugar is neighbour to the place in the given coordinates, false in the other case
 bool isSugarNeighbour(const Grille &g, Coord c);

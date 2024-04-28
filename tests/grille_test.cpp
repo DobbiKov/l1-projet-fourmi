@@ -45,6 +45,7 @@ TEST_CASE("Grille load and change place"){
     g.changePlace(p);
     Place p1 = g.loadPlace(c);
     CHECK(p1.containNid());
+    CHECK(p1.getColonyId() == NUMBER_OF_COLONIES-1);
 }
 
 TEST_CASE("Grille setNid"){
@@ -64,14 +65,23 @@ TEST_CASE("Grille setNid"){
         CHECK( g.loadPlace(c).getPheroNid() == 0 );
     }
     
-    setNid(g, ens, NUMBER_OF_COLONIES-1);
+    int colony = NUMBER_OF_COLONIES-1;
+    setNid(g, ens, colony);
     
     for(Coord c: nidCoords){
         CHECK_FALSE( g.loadPlace(c).isEmpty() );
         CHECK( g.loadPlace(c).containNid() );
         CHECK( g.loadPlace(c).getPheroNid() == 1 );
+        CHECK( g.loadPlace(c).getPheroNidByColony(colony) == 1 );
+        for(int i = 0; i < colony; i++){
+            CHECK( g.loadPlace(c).getPheroNidByColony(i) == 0 );
+        }
     }
-    CHECK_THROWS(setNid(g, ens, NUMBER_OF_COLONIES-1));
+    EnsCoord got_ens = g.getNid(colony);
+    for(int i = 0; i < got_ens.taille(); i++){
+        CHECK(got_ens.ieme(i) == ens.ieme(i));
+    }
+    CHECK_THROWS(setNid(g, ens, colony));
     CHECK_THROWS(setSugar(g, ens));
 }
 
@@ -213,10 +223,11 @@ TEST_CASE("Grille initializeGrille"){
         CHECK( g.loadPlace(c).containSugar() );
     }
 
-    for(Coord c: nid_ens.getCoords()){
-        CHECK_FALSE( g.loadPlace(c).isEmpty() );
-        CHECK( g.loadPlace(c).containNid() );
-        CHECK( g.loadPlace(c).getPheroNid() == 1 );
+    for(int col = 0; col < NUMBER_OF_COLONIES; col++){
+        EnsCoord nid_c = g.getNid(col);
+        for(int i = 0; i < nid_c.taille(); i++){
+            CHECK(nid_c.ieme(i) == NIDS_COORDS[col][i]);
+        }
     }
 }
 
@@ -234,15 +245,26 @@ TEST_CASE("Grille linearizePheroNid"){
     CHECK(g.loadPlace(Coord(4, 7)).getPheroNid() == 0);
     CHECK( g.loadPlace(Coord(3, 7)).getPheroNid() == 0 );
 
-    setNid(g, nid_ens, NUMBER_OF_COLONIES-1);
+    int colony = NUMBER_OF_COLONIES-1;
+    int s_colony = 0;
+
+    setNid(g, nid_ens, colony);
 
     CHECK(g.loadPlace(Coord(4, 7)).getPheroNid() == 1);
     CHECK( g.loadPlace(Coord(3, 7)).getPheroNid() == 0 );
+
+    CHECK(g.loadPlace(Coord(4, 7)).getPheroNidByColony(colony) == 1);
+    CHECK( g.loadPlace(Coord(3, 7)).getPheroNidByColony(colony) == 0 );
 
     linearizePheroNid(g);
 
     CHECK( float_equal(g.loadPlace(Coord(3, 7)).getPheroNid(), 1.0f - (1.0f/TAILLEGRILLE)) );
     CHECK( float_equal(g.loadPlace(Coord(2, 7)).getPheroNid(), (1.0f - (1.0f/TAILLEGRILLE))) - (1.0f/TAILLEGRILLE) );
+    CHECK( float_equal(g.loadPlace(Coord(3, 7)).getPheroNidByColony(colony), 1.0f - (1.0f/TAILLEGRILLE)) );
+    CHECK( float_equal(g.loadPlace(Coord(2, 7)).getPheroNidByColony(colony), (1.0f - (1.0f/TAILLEGRILLE))) - (1.0f/TAILLEGRILLE) );
+
+    CHECK_FALSE( float_equal(g.loadPlace(Coord(3, 7)).getPheroNidByColony(s_colony), 1.0f - (1.0f/TAILLEGRILLE)) );
+    CHECK( float_equal(g.loadPlace(Coord(2, 7)).getPheroNidByColony(s_colony), 0.0f ));
 
 }
 
@@ -273,8 +295,8 @@ TEST_CASE("Grille isNidNeighbour"){
     p.setNid(NUMBER_OF_COLONIES-1);
     g.changePlace(p);
 
-    CHECK(isNidNeighbour(g, c1n));
-    CHECK_FALSE(isNidNeighbour(g, c2));
+    CHECK(isFourmiNearNid(g, c1n));
+    CHECK_FALSE(isFourmiNearNid(g, c2));
 }
 
 TEST_CASE("Grille isSugarNeighbour"){
@@ -320,8 +342,8 @@ TEST_CASE("Grille getNeigbourNidPlace"){
     p.setNid(NUMBER_OF_COLONIES-1);
     g.changePlace(p);
 
-    CHECK(isNidNeighbour(g, c1n));
-    CHECK_FALSE(isNidNeighbour(g, c2));
+    CHECK(isFourmiNearNid(g, c1n));
+    CHECK_FALSE(isFourmiNearNid(g, c2));
 
     Place p1 = getNeigbourNidPlace(g, c1n);
     CHECK(p1.getCoords() == c1);
@@ -369,6 +391,89 @@ TEST_CASE("Grille getNeigbourSugarPlace"){
     CHECK(p1.getCoords() == c1);
 
     CHECK_THROWS_AS_MESSAGE(getNeigbourFourmiPlace(g, c2), invalid_argument, "There's not neighbour fourmi around this coordinate!");
+}
+
+TEST_CASE("Grille isFourmiNearNid"){
+    int colony = 1;
+    int s_colony = 2;
+    Fourmi f1 = Fourmi(Coord(1, 2), 1, colony);
+    Fourmi f3 = Fourmi(Coord(4, 2), 3, colony);
+    Fourmi f2 = Fourmi(Coord(2, 2), 2, s_colony);
+
+    vector<Fourmi> fourmis{{f1, f2, f3}};
+
+    EnsCoord nid(
+        vector<Coord>{{
+            Coord(1,3),
+            Coord(1,4),
+            Coord(2,3),
+            Coord(2,4),
+        }}
+    );
+
+    Grille g = Grille();
+    setNid(g, nid, colony);
+    setFourmis(g, fourmis);
+    linearizePheroNid(g);
+
+    CHECK(isFourmiNearItsNid(f1, g));
+    CHECK_FALSE(isFourmiNearItsNid(f2, g));
+    CHECK_FALSE(isFourmiNearItsNid(f3, g));
+}
+
+TEST_CASE("Grille getMaximalNeighbourPheroNidByColony"){
+
+    Coord c1 = Coord(1,1);
+    Coord c2 = Coord(1,2);
+    Coord c3 = Coord(2,1);
+    Coord c4 = Coord(1,3);
+    Grille g = Grille();
+
+    Place p1 = g.loadPlace(c1);
+    Place p2 = g.loadPlace(c2);
+    Place p3 = g.loadPlace(c3);
+    Place p4 = g.loadPlace(c4);
+
+    p1.setPheroNid(0.95f);
+    p2.setPheroNid(0.85f);
+
+    g.changePlace(p1);
+    g.changePlace(p2);
+
+    CHECK( float_equal(getMaximalNeighbourPheroNid(g, p3), 0.95f) );
+    CHECK( float_equal(getMaximalNeighbourPheroNid(g, p4), 0.85f) );
+}
+
+TEST_CASE("Grille getMaximalNeighbourPheroNidByColony"){
+    int colony = 1;
+    int s_colony = 2;
+
+    Coord c1 = Coord(1,1);
+    Coord c2 = Coord(1,2);
+    Coord c3 = Coord(2,1);
+    Coord c4 = Coord(1,3);
+    Coord c5 = Coord(1,0);
+    Grille g = Grille();
+
+    Place p1 = g.loadPlace(c1);
+    Place p2 = g.loadPlace(c2);
+    Place p3 = g.loadPlace(c3);
+    Place p4 = g.loadPlace(c4);
+    Place p5 = g.loadPlace(c5);
+
+    p1.setPheroNidByColony(colony, 0.95f);
+    p2.setPheroNidByColony(colony, 0.85f);
+    p1.setPheroNidByColony(s_colony, 0.85f);
+    p2.setPheroNidByColony(s_colony, 0.95f);
+
+    g.changePlace(p1);
+    g.changePlace(p2);
+
+    CHECK( float_equal(getMaximalNeighbourPheroNidByColony(g, p3, colony), 0.95f) );
+    CHECK( float_equal(getMaximalNeighbourPheroNidByColony(g, p4, colony), 0.85f) );
+    CHECK( float_equal(getMaximalNeighbourPheroNidByColony(g, p3, s_colony), 0.95f) );
+    CHECK( float_equal(getMaximalNeighbourPheroNidByColony(g, p4, s_colony), 0.95f) );
+    CHECK( float_equal(getMaximalNeighbourPheroNidByColony(g, p5, s_colony), 0.85f) );
 }
 
 TEST_SUITE_END();

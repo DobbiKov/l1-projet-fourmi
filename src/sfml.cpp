@@ -117,7 +117,7 @@ void makeGameStep(FourmiEng &f_eng, Grille &g, int &game_count){
             g.changePlace(p);
         }
         if(f.goingToTheNid()){
-            if(isFourmiNearNid(f, g)){
+            if(isFourmiNearItsNid(f, g)){
                 makeFourmiPutSugar(f, f_eng, g);
                 continue;
             }

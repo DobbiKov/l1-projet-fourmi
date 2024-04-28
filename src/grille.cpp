@@ -203,7 +203,7 @@ Place getNextRandomPlaceToGo(const Fourmi &f, const Grille &g){
     return move;
 }
 
-bool isNidNeighbour(const Grille &g, Coord c){
+bool isFourmiNearNid(const Grille &g, Coord c){
     EnsCoord ens = voisines(c);
     vector<Place> places = loadPlacesByCoords(g, ens);
     for(Place p: places){
@@ -273,7 +273,7 @@ void putSugarInRandomPlace(Grille &g){
     g.changePlace(rp);
 }
 
-bool isFourmiNearNid(const Fourmi &f, const Grille &g){
+bool isFourmiNearItsNid(const Fourmi &f, const Grille &g){
     // float max_int = getMaximalNeighbourPheroNidByColony(g, g.loadPlace(f.getCoords()), f.getColony());
     float phero_nid_on_the_place = g.loadPlace( f.getCoords() ).getPheroNidByColony(f.getColony());
     return float_equal(phero_nid_on_the_place, PHERO_NID_NEAR_NID);
