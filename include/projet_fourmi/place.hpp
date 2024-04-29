@@ -42,21 +42,64 @@ public:
     bool isEmpty() const;
 };
 
+/// @brief replaces the given fourmi from the one place to the other
+/// @param f fourmi
+/// @param from place from which we replace fourmi
+/// @param to place where we replace fourmi
 void replaceFourmi(Fourmi& f, Place& from, Place& to);
 
+/// @brief returns if the place is closer to the nid than the other
+/// @param p1 place 1
+/// @param p2 place 2
+/// @return returns true if place 1 is closer to the nid than the place 2
 bool isTheClosestNid(const Place& p1, const Place& p2);
+/// @brief returns if the place is farer to the nid than the other
+/// @param p1 place 1
+/// @param p2 place 2
+/// @return returns true if place 1 is farer to the nid than the place 2
 bool isTheFarestNid(const Place& p1, const Place& p2);
 
+/// @brief says whether the place is closer to the nid of of the given colony than the other
+/// @param p1 place 1
+/// @param p2 place 2
+/// @param colony colony
+/// @return true if place 1 is closer to the nid of the given colony, false in the other case
 bool isTheClosestNidByColony(const Place& p1, const Place& p2, int colony);
+/// @brief says whether the place is farer to the nid of of the given colony than the other
+/// @param p1 place 1
+/// @param p2 place 2
+/// @param colony colony
+/// @return true if place 1 is farer to the nid of the given colony, false in the other case
 bool isTheFarestNidByColony(const Place& p1, const Place& p2, int colony);
+/// @brief returns the place among the given ones with the biggest amount of pheromons of the nid
+/// @param places set of places
+/// @return the place with the biggest amount of pheromons of the nid
 Place closestPlaceToTheNid(vector<Place> places);
+/// @brief returns the place among the given ones with the biggest amount of pheromons of the nid of the given colony
+/// @param places set of places
+/// @param colony colony
+/// @return the place with the biggest amount of pheromons of the nid of the given colony
 Place closestPlaceToTheNidByColony(vector<Place> places, int colony);
 
 /// gets as a parameter vector of places and returns only the empty ones
 vector<Place> emptyPlaces(vector<Place> places);
 
+/// @brief returns whether a place is closer to the sugar using pheromons of the sugar of the given colony
+/// @param p1 place 1
+/// @param p2 place 2
+/// @param colony colony
+/// @return true if place 1 has more pheromons of the sugar of the given colony than the place 2, false in the other case
 bool isTheClosestSugar(const Place& p1, const Place& p2, int colony);
+/// @brief returns whether a place is farer to the sugar using pheromons of the sugar of the given colony
+/// @param p1 place 1
+/// @param p2 place 2
+/// @param colony colony
+/// @return true if place 1 has less pheromons of the sugar of the given colony than the place 2, false in the other case
 bool isTheFarestSugar(const Place& p1, const Place& p2, int colony);
+/// @brief returns the closer place to the sugar using pheromons of the sugar of the given colony
+/// @param places set of places
+/// @param colony colony
+/// @return place with the biggest amount of pheromons of sugar of the given colony
 Place closestPlaceToTheSugar(vector<Place> places, int colony);
 
 #endif

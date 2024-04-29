@@ -25,7 +25,7 @@ public:
     int getCoordIdx(const Coord& c) const;
     Place loadPlaceById(int id) const;
     vector<Place> getPlaces() const {return places;}
-    //la taille du tableau places
+    /// la taille du tableau places
     int numOfPlaces() const {return places.size(); }
 
     int getAmountOfSugar(int colony) const { return amount_of_sugar_in_each_colony[colony]; }
@@ -42,7 +42,7 @@ Grille initializeGrille(vector<Fourmi> fourmis, EnsCoord sugar_coords, int numbe
 void linearizePheroNid(Grille& g);
 void decreasePheroSugar(Grille& g);
 
-//return the places from the Grid by Coordinates
+/// return the places from the Grid by set of Coordinates
 vector<Place> loadPlacesByCoords(const Grille &g, EnsCoord ens);
 
 void areFourmiGrilleCoherent(const Grille &g, const Fourmi &f);

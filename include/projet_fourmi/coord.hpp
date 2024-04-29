@@ -42,6 +42,9 @@ private:
 };
 ostream& operator<<(ostream& out, EnsCoord ens);
 
+/// @brief returns the set of coordinates that are neighbours to the given coordinate
+/// @param c coordinate
+/// @return the set of coordinates that are neighbours to the given coordinate
 EnsCoord voisines(Coord c);
 
 #endif
