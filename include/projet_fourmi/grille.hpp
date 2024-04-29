@@ -81,7 +81,7 @@ bool isFourmiNearNid(const Grille &g, Coord c);
 /// return true if a sugar is neighbour to the place in the given coordinates, false in the other case
 bool isSugarNeighbour(const Grille &g, Coord c);
 
-/// return true if a fourmi nid is neighbour to the place in the given coordinates, false in the other case
+/// return true if a fourmi is neighbour to the place in the given coordinates, false in the other case
 bool isFourmiNeighbour(const Grille &g, Coord c);
 
 /// return the place of the neigbour nid around coordinates and error if there is not

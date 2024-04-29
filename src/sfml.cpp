@@ -19,6 +19,8 @@ void makeFourmiMoveToPlace(Fourmi &f, FourmiEng &f_eng, Grille &g, Place move);
 void makeFourmiTakeSugar(Fourmi f, FourmiEng &f_eng, Grille &g);
 void makeFourmiPutSugar(Fourmi f, FourmiEng &f_eng, Grille &g);
 
+void killFourmi(Fourmi &f, FourmiEng &f_eng, Grille &g);
+void battleTwoFourmis(Fourmi &f1, Fourmi &f2, FourmiEng &f_eng, Grille &g);
 void birthNewFourmi(FourmiEng &f_eng, Grille &g);
 
 sf::RectangleShape draw_empty_square(int row, int column, const Place &p, float color=12.0){
@@ -32,7 +34,7 @@ sf::RectangleShape draw_empty_square(int row, int column, const Place &p, float 
             int color_r = TEAMS_COLORS[i][0];
             int color_g = TEAMS_COLORS[i][1];
             int color_b = TEAMS_COLORS[i][2];
-            int phero_sug_alpha = (int)(p.getPheroSugar(i)*200);
+            int phero_sug_alpha = (int)(p.getPheroSugar(i)*150);
             if(phero_sug_alpha < alpha) break;
             rectangle.setFillColor(sf::Color(color_r, color_g, color_b, phero_sug_alpha));
             break;
@@ -117,13 +119,52 @@ void birthNewFourmi(FourmiEng &f_eng, Grille &g, int colony){
     g.descreaseAmountOfSugar(colony, AMOUT_OF_SUGAR_FOR_NEW_FOURMI);
 }
 
+void battleTwoFourmis(Fourmi &f1, Fourmi &f2, FourmiEng &f_eng, Grille &g){
+    if(f1.porteSucre() && f2.porteSucre()) return;
+    if(f1.getColony() == f2.getColony()) return;
+
+    if(!f1.porteSucre() && f2.porteSucre()){
+        killFourmi(f2, f_eng, g);
+        return;
+    }
+    if(f1.porteSucre() && !f2.porteSucre()){
+        killFourmi(f1, f_eng, g);
+        return;
+    }
+    int rand_num = rand() % 10;
+    if(rand_num >= 5){
+        killFourmi(f2, f_eng, g);
+        return;
+    }
+    killFourmi(f1, f_eng, g);
+    return;
+}
+
+void killFourmi(Fourmi &f, FourmiEng &f_eng, Grille &g){
+    Place p = g.loadPlace(f.getCoords());
+    f_eng.killFourmi(f);
+    p.removeFourmi();
+    g.changePlace(p);
+}
+
 
 void makeGameStep(FourmiEng &f_eng, Grille &g, int &game_count){
     if(game_count % NEW_SUGAR_APP_SPEED == 0){
         putSugarInRandomPlace(g);
     }
     g.decreasePheroSugar();
-    for(Fourmi f: f_eng.getFourmis()){
+    for(int i = 0; i < f_eng.getFourmiTabSize(); i++){
+        Fourmi f = f_eng.loadFourmi(i);
+        if(!f.isAlive()) continue;
+        if(isFourmiNeighbour(g, f.getCoords())){
+            Place p = getNeigbourFourmiPlace(g, f.getCoords());
+            Fourmi f2 = f_eng.loadFourmi(p.getFourmiID());
+            if(f.getColony() != f2.getColony() && f.isAlive() && f2.isAlive()){
+                battleTwoFourmis(f, f2, f_eng, g);
+            }
+        }
+        if(!f.isAlive()) continue;
+
         if(f.porteSucre()){
             Place p = g.loadPlace(f.getCoords());
             p.setPheroSugar(f.getColony());
@@ -153,7 +194,7 @@ void makeGameStep(FourmiEng &f_eng, Grille &g, int &game_count){
     }
 
     for(int i = 0; i < NUMBER_OF_COLONIES; i++){
-        if(g.getAmountOfSugar(i) >= AMOUT_OF_SUGAR_FOR_NEW_FOURMI){
+        if(g.getAmountOfSugar(i) >= AMOUT_OF_SUGAR_FOR_NEW_FOURMI && f_eng.getNumberOfFourmiInColony(i) >= 2){
             birthNewFourmi(f_eng, g, i);
         }
     }

@@ -19,6 +19,7 @@ public:
     Fourmi loadFourmi(Fourmi f) const;
     void changeFourmi(Fourmi f);
 
+    int getFourmiTabSize() const { return fourmis.size(); }
     int getNumberOfFourmi() const { return number_of_fourmis; }
     int getNumberOfFourmiInColony(int colony) const { return numbers_of_fourmi_by_colony[colony]; }
 
