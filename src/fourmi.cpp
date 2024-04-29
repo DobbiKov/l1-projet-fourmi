@@ -5,7 +5,14 @@
 
 using namespace std;
 
-Fourmi::Fourmi(Coord c, int id, int _colony):coords{c}, num{id}, porte_sucre{false}, is_alive{true}, colony{_colony}{}
+Fourmi::Fourmi(Coord c, int id, int _colony):coords{c}, num{id}, porte_sucre{false}, is_alive{true}, colony{_colony}{
+    verify_colony(_colony);
+}
+
+void verify_colony(int colony){
+    if(colony < 0 || colony >= NUMBER_OF_COLONIES)
+        throw invalid_argument("The colony is incorrect!");
+}
 
 Coord Fourmi::getCoords() const{
     return coords;
@@ -58,6 +65,7 @@ void Fourmi::deplace(Coord c){
 }
 
 vector<Fourmi> createListFourmis(EnsCoord ens, int colony){
+    verify_colony(colony);
     vector<Fourmi> res = vector<Fourmi>();
     for(int i = 0; i < ens.getCoords().size(); i++){
         Fourmi f = Fourmi(ens.getCoords()[i], i, colony);

@@ -43,6 +43,7 @@ bool Place::containNid() const{
     return colony_nid != -1;
 }
 bool Place::estSurUnePiste(int colony) const{
+    verify_colony(colony);
     return phero_sugar_by_colony[colony] > 0;
 }
 
@@ -61,6 +62,7 @@ void Place::removeSugar(){
 }
 
 void Place::setNid(int colony_id){
+    verify_colony(colony_id);
     if(!isEmpty())
         throw runtime_error("The place isn't empty!");
     colony_nid = colony_id;
@@ -85,10 +87,12 @@ void Place::setPheroNid(float intensity){
 }
 
 void Place::setPheroNidByColony(int colony, float intensity){
+    verify_colony(colony);
     phero_nid_by_colony[colony] = intensity;
 }
 
 void Place::setPheroSugar(int colony){
+    verify_colony(colony);
     phero_sugar_by_colony[colony] = MAX_PHERO_SUGAR_INTENSITY;
 }
 
@@ -126,16 +130,20 @@ bool isTheFarestNid(const Place& p1, const Place& p2){
     return p1.getPheroNid() <= p2.getPheroNid();
 }
 bool isTheClosestNidByColony(const Place& p1, const Place& p2, int colony){
+    verify_colony(colony);
     return p1.getPheroNidByColony(colony) >= p2.getPheroNidByColony(colony);
 }
 bool isTheFarestNidByColony(const Place& p1, const Place& p2, int colony){
+    verify_colony(colony);
     return p1.getPheroNidByColony(colony) <= p2.getPheroNidByColony(colony);
 }
 
 bool isTheClosestSugar(const Place& p1, const Place& p2, int colony){
+    verify_colony(colony);
     return p1.getPheroSugar(colony) >= p2.getPheroSugar(colony);
 }
 bool isTheFarestSugar(const Place& p1, const Place& p2, int colony){
+    verify_colony(colony);
     return p1.getPheroSugar(colony) <= p2.getPheroSugar(colony);
 }
 
@@ -163,6 +171,7 @@ Place closestPlaceToTheNid(vector<Place> places){
 }
 
 Place closestPlaceToTheNidByColony(vector<Place> places, int colony){
+    verify_colony(colony);
     int count = places.size()-1;
     while(places.size() > 1){
         if(count == 0) count = places.size()-1;
@@ -186,6 +195,7 @@ Place closestPlaceToTheNidByColony(vector<Place> places, int colony){
 }
 
 Place closestPlaceToTheSugar(vector<Place> places, int colony){
+    verify_colony(colony);
     int count = places.size()-1;
     while(places.size() > 1){
         if(count == 0) count = places.size()-1;

@@ -30,4 +30,8 @@ vector<Fourmi> createListFourmis(EnsCoord ens, int colony);
 bool operator==(const Fourmi& f1, const Fourmi& f2);
 bool operator!=(const Fourmi& f1, const Fourmi& f2);
 
+/// @brief function throws error if the colony is incorrect and does nothing in the other case
+/// @param colony 
+void verify_colony(int colony);
+
 #endif

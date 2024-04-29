@@ -61,6 +61,7 @@ void Grille::decreasePheroSugar(){
 }
 
 void setNid(Grille &g, EnsCoord ens, int colony){
+    verify_colony(colony);
     g.setNid(ens, colony);
     for(int i = 0; i < ens.getCoords().size(); i++){
         Coord c = ens.ieme(i);
@@ -112,6 +113,7 @@ float getMaximalNeighbourPheroNid(const Grille& g, Place p){
 }
 
 float getMaximalNeighbourPheroNidByColony(const Grille& g, Place p, int colony){
+    verify_colony(colony);
     EnsCoord voisins = voisines(p.getCoords());
     float max = 0;
     for(Coord c: voisins.getCoords()){

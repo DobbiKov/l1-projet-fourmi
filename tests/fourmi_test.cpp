@@ -25,6 +25,13 @@ TEST_CASE("Fourmi constructor"){
     CHECK(f.getColony() == NUMBER_OF_COLONIES-1);
 }
 
+TEST_CASE("Verify colony"){
+    CHECK_THROWS_AS(verify_colony(NUMBER_OF_COLONIES), invalid_argument);
+    CHECK_THROWS_AS(verify_colony(-1), invalid_argument);
+    verify_colony(NUMBER_OF_COLONIES-1);
+    verify_colony(0);
+}
+
 TEST_CASE("Fourmi functions"){
     Fourmi f = Fourmi(Coord(1, 2), 1, NUMBER_OF_COLONIES-1);
 
