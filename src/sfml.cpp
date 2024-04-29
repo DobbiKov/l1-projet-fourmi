@@ -110,9 +110,9 @@ void drawPheroNid(sf::RenderWindow &window, int row, int column, Place p){
     // }
     // vector<int> sorted_colonies = sort_by(colonies, pheros);
 
-    // for(int i : sorted_colonies){
         
     for(int i = 0; i < NUMBER_OF_COLONIES; i++){
+    // for(int i : sorted_colonies){
         int alpha = (int)(p.getPheroNidByColony(i)*127);
         rectangle.setFillColor(sf::Color(TEAMS_COLORS[i][0], TEAMS_COLORS[i][1], TEAMS_COLORS[i][2], alpha));
         window.draw(rectangle);
@@ -343,18 +343,24 @@ int main()
 
     sf::Text number_of_fourmis_text = create_text((TAILLEGRILLE+1)*scale, win_coords, font);
     win_coords += win_coords_step;
+    win_coords += win_coords_step;
 
     vector<sf::Text> amount_of_sugar_texts(NUMBER_OF_COLONIES);
+    vector<sf::Text> number_of_fourmis_texts(NUMBER_OF_COLONIES);
     for(int i = 0; i < NUMBER_OF_COLONIES; i++){
         amount_of_sugar_texts[i] = create_text((TAILLEGRILLE+1)*scale, win_coords, font);
         win_coords += win_coords_step;
-    }
-
-    vector<sf::Text> number_of_fourmis_texts(NUMBER_OF_COLONIES);
-    for(int i = 0; i < NUMBER_OF_COLONIES; i++){
         number_of_fourmis_texts[i] = create_text((TAILLEGRILLE+1)*scale, win_coords, font);
+
+        amount_of_sugar_texts[i].setFillColor(sf::Color(TEAMS_COLORS[i][0], TEAMS_COLORS[i][1], TEAMS_COLORS[i][2], 255));
+        number_of_fourmis_texts[i].setFillColor(sf::Color(TEAMS_COLORS[i][0], TEAMS_COLORS[i][1], TEAMS_COLORS[i][2], 255));
+        
+        win_coords += win_coords_step;
         win_coords += win_coords_step;
     }
+
+    // for(int i = 0; i < NUMBER_OF_COLONIES; i++){
+    // }
 
 
     while (window.isOpen()) {

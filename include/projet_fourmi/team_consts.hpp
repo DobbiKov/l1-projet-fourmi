@@ -22,16 +22,16 @@ const vector<vector<Coord>> NIDS_COORDS = {{
         Coord(5, 8)
     },
     {
-        Coord(24, 5),
-        Coord(24, 6),
-        Coord(25, 5),
-        Coord(25, 6)
+        Coord(21, 5),
+        Coord(21, 6),
+        Coord(22, 5),
+        Coord(22, 6)
     },
     {
-        Coord(12, 37),
-        Coord(12, 38),
-        Coord(13, 37),
-        Coord(13, 38)
+        Coord(12, 18),
+        Coord(12, 19),
+        Coord(13, 18),
+        Coord(13, 19)
     },
     {
         Coord(40, 25),
