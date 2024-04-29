@@ -8,6 +8,7 @@
 #include <projet_fourmi/place.hpp>
 #include <projet_fourmi/grille.hpp>
 #include <projet_fourmi/consts.hpp>
+#include <projet_fourmi/team_consts.hpp>
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include <lib/doctest.h>

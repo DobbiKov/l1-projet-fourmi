@@ -23,29 +23,26 @@ void killFourmi(Fourmi &f, FourmiEng &f_eng, Grille &g);
 void battleTwoFourmis(Fourmi &f1, Fourmi &f2, FourmiEng &f_eng, Grille &g);
 void birthNewFourmi(FourmiEng &f_eng, Grille &g);
 
-sf::RectangleShape draw_empty_square(int row, int column, const Place &p, float color=12.0){
+void draw_phero_sugar(sf::RenderWindow &window, int row, int column, const Place &p, float color=12.0){
     sf::RectangleShape rectangle(sf::Vector2f(scale, scale));
-
-    int alpha = (int)(p.getPheroNid()*255);
-    rectangle.setFillColor(sf::Color(120, 120, 120, alpha));
 
     for(int i = 0; i < NUMBER_OF_COLONIES; i++){
         if(p.estSurUnePiste(i)){
             int color_r = TEAMS_COLORS[i][0];
             int color_g = TEAMS_COLORS[i][1];
             int color_b = TEAMS_COLORS[i][2];
-            int phero_sug_alpha = (int)(p.getPheroSugar(i)*150);
-            if(phero_sug_alpha < alpha) break;
+            int phero_sug_alpha = (int)(p.getPheroSugar(i)*127);
+
             rectangle.setFillColor(sf::Color(color_r, color_g, color_b, phero_sug_alpha));
+            rectangle.setPosition(sf::Vector2f(scale*row, scale*column));
+
+            window.draw(rectangle);
             break;
         }
     }
-    rectangle.setPosition(sf::Vector2f(scale*row, scale*column));
-
-    return rectangle;
 }
 
-sf::RectangleShape draw_nid(int row, int column, const Place &p, float color=12.0){
+void draw_nid(sf::RenderWindow &window, int row, int column, const Place &p, float color=12.0){
     sf::RectangleShape rectangle(sf::Vector2f(scale, scale));
 
     int color_r = TEAMS_COLORS[p.getColonyId()][0];
@@ -56,10 +53,10 @@ sf::RectangleShape draw_nid(int row, int column, const Place &p, float color=12.
 
     rectangle.setPosition(sf::Vector2f(scale*row, scale*column));
 
-    return rectangle;
+    window.draw(rectangle);
 }
 
-sf::CircleShape draw_fourmi(int row, int column, Fourmi f, float color=12.0){
+void draw_fourmi(sf::RenderWindow &window, int row, int column, Fourmi f, float color=12.0){
     sf::CircleShape triangle(scale/2, 3);
 
     int color_r = TEAMS_COLORS[f.getColony()][0];
@@ -76,10 +73,10 @@ sf::CircleShape draw_fourmi(int row, int column, Fourmi f, float color=12.0){
     triangle.setOutlineThickness(0.5f);
     triangle.setOutlineColor(sf::Color::Black);
 
-    return triangle;
+    window.draw(triangle);
 }
 
-sf::CircleShape draw_fourmi_sugar(int row, int column, Fourmi f, float color=12.0){
+void draw_fourmi_sugar(sf::RenderWindow &window, int row, int column, Fourmi f, float color=12.0){
     sf::CircleShape triangle(scale/4, 3);
 
 
@@ -88,15 +85,25 @@ sf::CircleShape draw_fourmi_sugar(int row, int column, Fourmi f, float color=12.
     );
     triangle.setPosition(sf::Vector2f((scale*row) + (scale/4), (scale*column) + (scale/4)));
 
-    return triangle;
+    window.draw(triangle);
 }
 
-sf::CircleShape draw_sugar(int row, int column, float color=12.0){
+void draw_sugar(sf::RenderWindow &window, int row, int column, float color=12.0){
     sf::CircleShape circle(scale/2);
     circle.setFillColor(sf::Color::Blue);
     circle.setPosition(sf::Vector2f(scale*row, scale*column));
 
-    return circle;
+    window.draw(circle);
+}
+
+void drawPheroNid(sf::RenderWindow &window, int row, int column, Place p){
+    sf::RectangleShape rectangle(sf::Vector2f(scale, scale));
+    rectangle.setPosition(sf::Vector2f(scale*row, scale*column));
+    for(int i = 0; i < NUMBER_OF_COLONIES; i++){
+        int alpha = (int)(p.getPheroNidByColony(i)*127);
+        rectangle.setFillColor(sf::Color(TEAMS_COLORS[i][0], TEAMS_COLORS[i][1], TEAMS_COLORS[i][2], alpha));
+        window.draw(rectangle);
+    }
 }
 
 void birthNewFourmi(FourmiEng &f_eng, Grille &g, int colony){
@@ -194,7 +201,9 @@ void makeGameStep(FourmiEng &f_eng, Grille &g, int &game_count){
     }
 
     for(int i = 0; i < NUMBER_OF_COLONIES; i++){
-        if(g.getAmountOfSugar(i) >= AMOUT_OF_SUGAR_FOR_NEW_FOURMI && f_eng.getNumberOfFourmiInColony(i) >= 2){
+        if(g.getAmountOfSugar(i) >= AMOUT_OF_SUGAR_FOR_NEW_FOURMI 
+        && f_eng.getNumberOfFourmiInColony(i) >= 2
+        && f_eng.getNumberOfFourmiInColony(i) < MAX_NUMBER_OF_FOURMI_IN_COLONY){
             birthNewFourmi(f_eng, g, i);
         }
     }
@@ -347,13 +356,14 @@ int main()
 
         for(Place p: grille.getPlaces()){
             Coord c = p.getCoords();
-            window.draw(draw_empty_square(c.getLine(), c.getColumn(), p));
+            drawPheroNid(window, c.getLine(), c.getColumn(), p);
+            draw_phero_sugar(window, c.getLine(), c.getColumn(), p);
             if(p.isEmpty()) continue;
-            if(p.containNid()) window.draw(draw_nid(c.getLine(), c.getColumn(), p));
-            if(p.containSugar()) window.draw(draw_sugar(c.getLine(), c.getColumn()));
+            if(p.containNid()) draw_nid(window, c.getLine(), c.getColumn(), p);
+            if(p.containSugar()) draw_sugar(window, c.getLine(), c.getColumn());
             if(p.getFourmiID() != -1 && f_eng.loadFourmi(p.getFourmiID()).isAlive()) {
-                window.draw(draw_fourmi(c.getLine(), c.getColumn(), f_eng.loadFourmi(p.getFourmiID()) ));
-                if(f_eng.loadFourmi(p.getFourmiID()).porteSucre()) window.draw(draw_fourmi_sugar(c.getLine(), c.getColumn(), f_eng.loadFourmi(p.getFourmiID()) ));
+                draw_fourmi(window, c.getLine(), c.getColumn(), f_eng.loadFourmi(p.getFourmiID()) );
+                if(f_eng.loadFourmi(p.getFourmiID()).porteSucre()) draw_fourmi_sugar(window, c.getLine(), c.getColumn(), f_eng.loadFourmi(p.getFourmiID()) );
             }
         }
 
