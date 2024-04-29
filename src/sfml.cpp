@@ -23,7 +23,6 @@ void birthNewFourmi(FourmiEng &f_eng, Grille &g);
 
 sf::RectangleShape draw_empty_square(int row, int column, const Place &p, float color=12.0){
     sf::RectangleShape rectangle(sf::Vector2f(scale, scale));
-    // rectangle.setFillColor(sf::Color::Black);
 
     int alpha = (int)(p.getPheroNid()*255);
     rectangle.setFillColor(sf::Color(120, 120, 120, alpha));
@@ -43,6 +42,7 @@ sf::RectangleShape draw_empty_square(int row, int column, const Place &p, float 
 
     return rectangle;
 }
+
 sf::RectangleShape draw_nid(int row, int column, const Place &p, float color=12.0){
     sf::RectangleShape rectangle(sf::Vector2f(scale, scale));
 
