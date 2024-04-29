@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include <projet_fourmi/outils.hpp>
 #include <projet_fourmi/grille.hpp>
 #include <projet_fourmi/place.hpp>
 #include <iostream>
@@ -99,6 +100,18 @@ void draw_sugar(sf::RenderWindow &window, int row, int column, float color=12.0)
 void drawPheroNid(sf::RenderWindow &window, int row, int column, Place p){
     sf::RectangleShape rectangle(sf::Vector2f(scale, scale));
     rectangle.setPosition(sf::Vector2f(scale*row, scale*column));
+
+    // vector<float> pheros(0);
+    // vector<int> colonies(0);
+
+    // for(int i = 0; i < NUMBER_OF_COLONIES; i++){
+    //     pheros.push_back(p.getPheroNidByColony(i));
+    //     colonies.push_back(i);
+    // }
+    // vector<int> sorted_colonies = sort_by(colonies, pheros);
+
+    // for(int i : sorted_colonies){
+        
     for(int i = 0; i < NUMBER_OF_COLONIES; i++){
         int alpha = (int)(p.getPheroNidByColony(i)*127);
         rectangle.setFillColor(sf::Color(TEAMS_COLORS[i][0], TEAMS_COLORS[i][1], TEAMS_COLORS[i][2], alpha));

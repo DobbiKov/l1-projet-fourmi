@@ -19,4 +19,6 @@ float val_abs(float num);
 /// @return returns true if two numbers are approximately equal, false in the other case
 bool float_equal(float a, float b);
 
+vector<int> sort_by(vector<int> ints, vector<float> floats);
+
 #endif

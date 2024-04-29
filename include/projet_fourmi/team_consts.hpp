@@ -5,12 +5,13 @@
 #include <projet_fourmi/consts.hpp>
 #include <projet_fourmi/coord.hpp>
 
-const int NUMBER_OF_COLONIES = 3;
+const int NUMBER_OF_COLONIES = 4;
 
 const int TEAMS_COLORS[NUMBER_OF_COLONIES][3] = {
     {255, 0, 0},
-    {255, 255, 0},
+    {0, 0, 255},
     {255, 0, 255},
+    {0, 255, 0},
 };
 
 const vector<vector<Coord>> NIDS_COORDS = {{
@@ -21,16 +22,22 @@ const vector<vector<Coord>> NIDS_COORDS = {{
         Coord(5, 8)
     },
     {
-        Coord(15, 5),
-        Coord(15, 6),
-        Coord(16, 5),
-        Coord(16, 6)
+        Coord(24, 5),
+        Coord(24, 6),
+        Coord(25, 5),
+        Coord(25, 6)
     },
     {
-        Coord(12, 16),
-        Coord(12, 17),
-        Coord(13, 16),
-        Coord(13, 17)
+        Coord(12, 37),
+        Coord(12, 38),
+        Coord(13, 37),
+        Coord(13, 38)
+    },
+    {
+        Coord(40, 25),
+        Coord(40, 26),
+        Coord(41, 25),
+        Coord(41, 26)
     },
     }};
 
