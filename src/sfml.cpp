@@ -25,15 +25,16 @@ sf::RectangleShape draw_empty_square(int row, int column, const Place &p, float 
     sf::RectangleShape rectangle(sf::Vector2f(scale, scale));
     // rectangle.setFillColor(sf::Color::Black);
 
-    int alpha = (int)(p.getPheroNid()*100);
+    int alpha = (int)(p.getPheroNid()*255);
     rectangle.setFillColor(sf::Color(120, 120, 120, alpha));
 
     for(int i = 0; i < NUMBER_OF_COLONIES; i++){
         if(p.estSurUnePiste(i)){
-            int color_r = TEAMS_COLORS[p.getColonyId()][0];
-            int color_g = TEAMS_COLORS[p.getColonyId()][1];
-            int color_b = TEAMS_COLORS[p.getColonyId()][2];
-            int phero_sug_alpha = (int)(p.getPheroSugar(i)*100);
+            int color_r = TEAMS_COLORS[i][0];
+            int color_g = TEAMS_COLORS[i][1];
+            int color_b = TEAMS_COLORS[i][2];
+            int phero_sug_alpha = (int)(p.getPheroSugar(i)*200);
+            if(phero_sug_alpha < alpha) break;
             rectangle.setFillColor(sf::Color(color_r, color_g, color_b, phero_sug_alpha));
             break;
         }
@@ -68,10 +69,22 @@ sf::CircleShape draw_fourmi(int row, int column, Fourmi f, float color=12.0){
     triangle.setFillColor(
         sf::Color(color_r, color_g, color_b, 255)
     );
-    // if(f.searchingSugar()){
-    //     triangle.setFillColor(sf::Color::Red);
-    // }
     triangle.setPosition(sf::Vector2f(scale*row, scale*column));
+
+    triangle.setOutlineThickness(0.5f);
+    triangle.setOutlineColor(sf::Color::Black);
+
+    return triangle;
+}
+
+sf::CircleShape draw_fourmi_sugar(int row, int column, Fourmi f, float color=12.0){
+    sf::CircleShape triangle(scale/4, 3);
+
+
+    triangle.setFillColor(
+        sf::Color::Blue
+    );
+    triangle.setPosition(sf::Vector2f((scale*row) + (scale/4), (scale*column) + (scale/4)));
 
     return triangle;
 }
@@ -297,7 +310,10 @@ int main()
             if(p.isEmpty()) continue;
             if(p.containNid()) window.draw(draw_nid(c.getLine(), c.getColumn(), p));
             if(p.containSugar()) window.draw(draw_sugar(c.getLine(), c.getColumn()));
-            if(p.getFourmiID() != -1 && f_eng.loadFourmi(p.getFourmiID()).isAlive()) window.draw(draw_fourmi(c.getLine(), c.getColumn(), f_eng.loadFourmi(p.getFourmiID()) ));
+            if(p.getFourmiID() != -1 && f_eng.loadFourmi(p.getFourmiID()).isAlive()) {
+                window.draw(draw_fourmi(c.getLine(), c.getColumn(), f_eng.loadFourmi(p.getFourmiID()) ));
+                if(f_eng.loadFourmi(p.getFourmiID()).porteSucre()) window.draw(draw_fourmi_sugar(c.getLine(), c.getColumn(), f_eng.loadFourmi(p.getFourmiID()) ));
+            }
         }
 
         text_for_game_count = "Game count: " + to_string(GAME_COUNT);
