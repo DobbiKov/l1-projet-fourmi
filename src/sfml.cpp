@@ -46,9 +46,9 @@ void draw_phero_sugar(sf::RenderWindow &window, int row, int column, const Place
 void draw_nid(sf::RenderWindow &window, int row, int column, const Place &p, float color=12.0){
     sf::RectangleShape rectangle(sf::Vector2f(scale, scale));
 
-    int color_r = TEAMS_COLORS[p.getColonyId()][0];
-    int color_g = TEAMS_COLORS[p.getColonyId()][1];
-    int color_b = TEAMS_COLORS[p.getColonyId()][2];
+    int color_r = TEAMS_COLORS[p.getNidColonyId()][0];
+    int color_g = TEAMS_COLORS[p.getNidColonyId()][1];
+    int color_b = TEAMS_COLORS[p.getNidColonyId()][2];
 
     rectangle.setFillColor(sf::Color(color_r, color_g, color_b, 255));
 
@@ -84,7 +84,7 @@ void draw_fourmi(sf::RenderWindow &window, int row, int column, Fourmi f, float 
         break;
     case Caste::reproductrice:
         triangle.setRadius(scale/2);
-        triangle.setOutlineThickness(1.0f);
+        triangle.setOutlineThickness(2.0f);
         triangle.setPointCount(6);
         break;
     
@@ -146,10 +146,10 @@ void birthNewFourmi(FourmiEng &f_eng, Grille &g, int colony){
     int idx = rand() % places.size();
     Place new_p = places[idx];
 
-    //TODO: temp, caste ouvrier
-    Caste temp_c = Caste::ouvrier;
+    int cast_n = rand() % NUMBER_OF_CASTES;
+    Caste new_caste = getCastByNumber(cast_n);
 
-    Fourmi f = Fourmi(new_p.getCoords(), 0, colony, temp_c);
+    Fourmi f = Fourmi(new_p.getCoords(), 0, colony, new_caste);
 
     Fourmi new_f = f_eng.birthFourmi(f);
 
@@ -222,10 +222,12 @@ void makeGameStep(FourmiEng &f_eng, Grille &g, int &game_count){
                 Place p = g.loadPlace(f.getCoords());
                 if(p.containNid()) continue;
                 if(isFourmiNearItsNid(f, g)){
-                    // put fourmi in the NID
+                    Place nid_place = getNeigbourNidPlace(g, f.getCoords());
+                    if(nid_place.getFourmiID() == -1) makeFourmiMoveToPlace(f, f_eng, g, nid_place);
                     continue;
                 }
                 makeMoveToTheNidFourmi(f, f_eng, g);
+                continue;
             }
         }
 
@@ -259,7 +261,7 @@ void makeGameStep(FourmiEng &f_eng, Grille &g, int &game_count){
 
     for(int i = 0; i < NUMBER_OF_COLONIES; i++){
         if(g.getAmountOfSugar(i) >= AMOUT_OF_SUGAR_FOR_NEW_FOURMI 
-        && f_eng.getNumberOfFourmiInColony(i) >= 2
+        && numberOfFourmiInTheNid(g, i) >= 2
         && f_eng.getNumberOfFourmiInColony(i) < MAX_NUMBER_OF_FOURMI_IN_COLONY){
             birthNewFourmi(f_eng, g, i);
         }
@@ -318,7 +320,7 @@ void makeFourmiMoveToPlace(Fourmi &f, FourmiEng &f_eng, Grille &g, Place move){
         Coord old_coords = f.getCoords();
         Place old_place = g.loadPlace(old_coords);
         Place new_place = g.loadPlace(move.getCoords());
-        if(!new_place.isEmpty()) return;
+        if(!canFourmiMoveToPlace(f, move)) return;
 
         replaceFourmi(f, old_place, new_place);
 
@@ -341,6 +343,10 @@ sf::Font load_font(){
         throw runtime_error("Error while loading font");
     }
     return f;
+}
+
+void debug_text(int num, const Fourmi &f, const Place &p){
+    cout << "Debug " << num << " " << f.getNum() << " " << f.getCoords() << " " << p.getCoords() << " " << p.getFourmiID() << endl;
 }
 
 sf::Text create_text(float line, float column, const sf::Font &f){
@@ -370,9 +376,6 @@ int main()
     vector<Fourmi> fourmis{{}};
     for(int colony = 0; colony < NUMBER_OF_COLONIES; colony++){
         EnsCoord fourmis_coords = coordsAroundNid(NIDS_COORDS[colony]);
-
-        // //TODO: temp caste 
-        // Caste temp_c = Caste::ouvrier;
 
         int cast_devider = fourmis_coords.taille() / 3;
         int cast = 0;

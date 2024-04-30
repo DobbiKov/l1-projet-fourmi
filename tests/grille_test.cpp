@@ -45,7 +45,7 @@ TEST_CASE("Grille load and change place"){
     g.changePlace(p);
     Place p1 = g.loadPlace(c);
     CHECK(p1.containNid());
-    CHECK(p1.getColonyId() == NUMBER_OF_COLONIES-1);
+    CHECK(p1.getNidColonyId() == NUMBER_OF_COLONIES-1);
 }
 
 TEST_CASE("Grille setNid"){
@@ -481,5 +481,15 @@ TEST_CASE("Grille getMaximalNeighbourPheroNidByColony"){
     CHECK( float_equal(getMaximalNeighbourPheroNidByColony(g, p4, s_colony), 0.95f) );
     CHECK( float_equal(getMaximalNeighbourPheroNidByColony(g, p5, s_colony), 0.85f) );
 }
+
+// TODO: test 
+// int numberOfFourmiInTheNid(const Grille &g, int colony){
+//     vector<Place> nid_places = loadPlacesByCoords(g, g.getNid(colony) );
+//     int num = 0;
+//     for(Place p : nid_places){
+//         if(p.getFourmiID() != -1) num++;
+//     }
+//     return num;
+// }
 
 TEST_SUITE_END();

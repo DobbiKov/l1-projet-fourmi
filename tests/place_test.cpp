@@ -21,7 +21,7 @@ TEST_CASE("Constructor"){
     CHECK(p.getCoords() == Coord(3, 5));
     CHECK(p.getFourmiID() == -1);
     CHECK(p.getPheroNid() == 0);
-    CHECK(p.getColonyId() == -1);
+    CHECK(p.getNidColonyId() == -1);
     for(int i = 0; i < NUMBER_OF_COLONIES; i++){
         CHECK(p.getPheroSugar(i) == 0);
     }
@@ -382,6 +382,41 @@ TEST_CASE("the closest to the sugar among places"){
     p5.decreasePheroSugar();
     vector<Place> places{{p1, p2, p3, p4, p5}};
     CHECK(closestPlaceToTheSugar(places, 1).getCoords() == p4.getCoords());
+}
+
+TEST_CASE("Place canFourmiMoveToPlace"){
+    Place p1 = Place(Coord(1, 3));
+    Place p2 = Place(Coord(1, 3));
+    Place p3 = Place(Coord(1, 3));
+
+    int colony = 1;
+    int s_colony = 2;
+    Fourmi f1 = Fourmi(Coord(2, 3), 1, colony, Caste::ouvrier);
+    Fourmi f2 = Fourmi(Coord(2, 3), 1, colony, Caste::guerrier);
+    Fourmi f3 = Fourmi(Coord(2, 3), 1, colony, Caste::reproductrice);
+
+    CHECK(canFourmiMoveToPlace(f1, p1));
+    CHECK(canFourmiMoveToPlace(f2, p1));
+    CHECK(canFourmiMoveToPlace(f3, p1));
+
+    CHECK(canFourmiMoveToPlace(f1, p2));
+    CHECK(canFourmiMoveToPlace(f2, p2));
+    CHECK(canFourmiMoveToPlace(f3, p2));
+
+    p2.setSugar();
+
+    CHECK_FALSE(canFourmiMoveToPlace(f1, p2));
+    CHECK_FALSE(canFourmiMoveToPlace(f2, p2));
+    CHECK_FALSE(canFourmiMoveToPlace(f3, p2));
+
+    p1.setNid(colony);
+    p3.setNid(s_colony);
+
+    CHECK_FALSE(canFourmiMoveToPlace(f1, p1));
+    CHECK_FALSE(canFourmiMoveToPlace(f2, p1));
+    CHECK(canFourmiMoveToPlace(f3, p1));
+    
+    CHECK_FALSE(canFourmiMoveToPlace(f3, p3));
 }
 
 TEST_SUITE_END();

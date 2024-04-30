@@ -23,7 +23,7 @@ public:
     float getPheroNid() const;
     float getPheroNidByColony(int colony) const;
     int getFourmiID() const;
-    int getColonyId() const;
+    int getNidColonyId() const;
 
     bool containSugar() const;
     bool containNid() const;
@@ -104,5 +104,11 @@ bool isTheFarestSugar(const Place& p1, const Place& p2, int colony);
 /// @param colony colony
 /// @return place with the biggest amount of pheromons of sugar of the given colony
 Place closestPlaceToTheSugar(vector<Place> places, int colony);
+
+/// @brief tells whether fourmi can move to the place
+/// @param f fourmi
+/// @param p place
+/// @return true if he can and false in the other case
+bool canFourmiMoveToPlace(const Fourmi &f, const Place &p);
 
 #endif

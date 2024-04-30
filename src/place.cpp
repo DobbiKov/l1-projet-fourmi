@@ -32,7 +32,7 @@ int Place::getFourmiID() const{
     return fourmi_id;
 }
 
-int Place::getColonyId() const{
+int Place::getNidColonyId() const{
     return colony_nid;
 }
 
@@ -130,7 +130,7 @@ bool Place::isEmpty() const{
 }
 
 void replaceFourmi(Fourmi& f, Place& from, Place& to){
-    if(!to.isEmpty())
+    if(!canFourmiMoveToPlace(f, to))
         throw invalid_argument("The place where you want to replace the ant to isn't empty!");
     if(from.getFourmiID() != f.getNum())
         throw invalid_argument("The place doesn't contain this ant!");
@@ -247,4 +247,18 @@ vector<Place> emptyPlaces(vector<Place> places){
         res.push_back(p);
     }
     return res;
+}
+
+bool canFourmiMoveToPlace(const Fourmi &f, const Place &p){
+    if(p.isEmpty()) return true;
+
+    if(!p.containNid()) return false;
+
+    if(!canCasteStayAtTheNid(f.getCaste())) return false;
+
+    if(p.getFourmiID() != -1) return false;
+
+    if(p.getNidColonyId() != f.getColony()) return false;
+
+    return true;
 }
