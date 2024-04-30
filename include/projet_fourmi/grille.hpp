@@ -101,4 +101,10 @@ Place getRandomEmptyPlace(const Grille &g);
 /// @brief Puts sugar in random place
 /// @param g the reference to the grid
 void putSugarInRandomPlace(Grille &g);
+
+/// @brief Gives the number of fourmi that are in the nid
+/// @param g 
+/// @param colony 
+/// @return number of fourmi in the nid
+int numberOfFourmiInTheNid(const Grille &g, int colony);
 #endif

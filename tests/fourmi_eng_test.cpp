@@ -36,12 +36,13 @@ TEST_CASE("FourmiEng constructor"){
     EnsCoord fourmis_coords = EnsCoord(coords);
     vector<Fourmi> fourmis{{}};
 
+    Caste cast = Caste::ouvrier;
     for(int i = 0; i < fourmis_coords.taille(); i++){
-        Fourmi f = Fourmi(fourmis_coords.ieme(i), i, NUMBER_OF_COLONIES-1);
+        Fourmi f = Fourmi(fourmis_coords.ieme(i), i, NUMBER_OF_COLONIES-1, cast);
         fourmis.push_back(f);
     }
-    Fourmi f_1 = Fourmi(Coord(1, 1), 12, 1);
-    Fourmi f_1_2 = Fourmi(Coord(1, 2), 13, 1);
+    Fourmi f_1 = Fourmi(Coord(1, 1), 12, 1, Caste::guerrier);
+    Fourmi f_1_2 = Fourmi(Coord(1, 2), 13, 1, Caste::reproductrice);
     fourmis.push_back(f_1);
     fourmis.push_back(f_1_2);
     FourmiEng f_eng = FourmiEng(fourmis);
@@ -92,8 +93,9 @@ TEST_CASE("FourmiEng loadFourmi"){
     EnsCoord fourmis_coords = EnsCoord(coords);
     vector<Fourmi> fourmis{{}};
 
+    Caste cast = Caste::ouvrier;
     for(int i = 0; i < fourmis_coords.taille(); i++){
-        Fourmi f = Fourmi(fourmis_coords.ieme(i), i, NUMBER_OF_COLONIES-1);
+        Fourmi f = Fourmi(fourmis_coords.ieme(i), i, NUMBER_OF_COLONIES-1, cast);
         fourmis.push_back(f);
     }
 
@@ -101,7 +103,7 @@ TEST_CASE("FourmiEng loadFourmi"){
 
     CHECK_THROWS_AS_MESSAGE(f_eng.loadFourmi(12), invalid_argument, "Index is out of range of the list of fourmis!");
 
-    Fourmi fake_f = Fourmi(Coord(1, 3), 13, NUMBER_OF_COLONIES-1);
+    Fourmi fake_f = Fourmi(Coord(1, 3), 13, NUMBER_OF_COLONIES-1, cast);
     CHECK_THROWS_AS_MESSAGE(f_eng.loadFourmi(fake_f), invalid_argument, "The ant isn't in list of fourmis!");
 
     Fourmi f = f_eng.loadFourmi(1);
@@ -135,8 +137,9 @@ TEST_CASE("FourmiEng killFourmi, birthFourmi"){
     EnsCoord fourmis_coords = EnsCoord(coords);
     vector<Fourmi> fourmis{{}};
 
+    Caste cast = Caste::ouvrier;
     for(int i = 0; i < fourmis_coords.taille(); i++){
-        Fourmi f = Fourmi(fourmis_coords.ieme(i), i, NUMBER_OF_COLONIES-1);
+        Fourmi f = Fourmi(fourmis_coords.ieme(i), i, NUMBER_OF_COLONIES-1, cast);
         fourmis.push_back(f);
     }
 
@@ -148,11 +151,13 @@ TEST_CASE("FourmiEng killFourmi, birthFourmi"){
     CHECK_FALSE(f_eng.loadFourmi(2).isAlive());
     CHECK(f_eng.getNumberOfFourmi() == 11);
 
-    Fourmi n_f = Fourmi(Coord(1, 13), 0, NUMBER_OF_COLONIES-1);
+    Fourmi n_f = Fourmi(Coord(1, 13), 0, NUMBER_OF_COLONIES-1, cast);
     Fourmi new_fourmi = f_eng.birthFourmi(n_f);
     CHECK(new_fourmi.getNum() == 12);
     CHECK(f_eng.getFourmis().size() == 13);
     CHECK(f_eng.getNumberOfFourmi() == 12);
+    CHECK(new_fourmi.getColony() == NUMBER_OF_COLONIES-1);
+    CHECK(new_fourmi.getCaste() == cast);
 }
 
 TEST_SUITE_END();

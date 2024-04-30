@@ -34,6 +34,27 @@ TEST_CASE("Constructor"){
     CHECK(p.isEmpty());
 }
 
+TEST_CASE("Place estSurUnePiste"){
+    Place p = Place(Coord(3, 5));
+    for(int i = 0; i < NUMBER_OF_COLONIES; i++){
+        CHECK_FALSE(p.estSurUnePiste(i));
+    }
+    CHECK_FALSE(p.estSurUneAnyPiste());
+    CHECK_THROWS_AS(p.getColonyOfThePiste(), runtime_error);
+
+    int colony = 1;
+    p.setPheroSugar(colony);
+
+    CHECK(p.estSurUnePiste(colony));
+    for(int i = 0; i < NUMBER_OF_COLONIES; i++){
+        if(i == colony) continue;
+        CHECK_FALSE(p.estSurUnePiste(i));
+    }
+    CHECK(p.estSurUneAnyPiste());
+    int c_s_p = p.getColonyOfThePiste();
+    CHECK(c_s_p == colony);
+}
+
 TEST_CASE("Place sugar"){
     Place p1 = Place(Coord(11, 4));
     p1.setNid(NUMBER_OF_COLONIES-1);
@@ -49,9 +70,11 @@ TEST_CASE("Place sugar"){
     p.setSugar();
     CHECK_FALSE(p.isEmpty());
 
+    Caste cast = Caste::ouvrier;
+
     CHECK_THROWS_AS(p1.setNid(NUMBER_OF_COLONIES-1), runtime_error);
     CHECK_THROWS_AS(p1.setSugar(), runtime_error);
-    CHECK_THROWS_AS(p1.setFourmi(Fourmi(Coord(0, 0), 1, NUMBER_OF_COLONIES-1)), runtime_error);
+    CHECK_THROWS_AS(p1.setFourmi(Fourmi(Coord(0, 0), 1, NUMBER_OF_COLONIES-1, cast)), runtime_error);
 
     CHECK(p.containSugar());
     p.removeSugar();
@@ -108,9 +131,11 @@ TEST_CASE("Place nid"){
     CHECK_FALSE(p.isEmpty());
     CHECK(p.containNid());
 
+    Caste cast = Caste::ouvrier;
+
     CHECK_THROWS_AS(p1.setNid(NUMBER_OF_COLONIES-1), runtime_error);
     CHECK_THROWS_AS(p1.setSugar(), runtime_error);
-    CHECK_THROWS_AS(p1.setFourmi(Fourmi(Coord(0, 0), 1, NUMBER_OF_COLONIES-1)), runtime_error);
+    CHECK_THROWS_AS(p1.setFourmi(Fourmi(Coord(0, 0), 1, NUMBER_OF_COLONIES-1, cast)), runtime_error);
 }
 
 TEST_CASE("Place phero nid"){
@@ -132,10 +157,11 @@ TEST_CASE("Place phero nid"){
 }
 
 TEST_CASE("Place fourmi"){
-    Fourmi f = Fourmi(Coord(1, 3), 1, NUMBER_OF_COLONIES-1);
+    Caste cast = Caste::ouvrier;
+    Fourmi f = Fourmi(Coord(1, 3), 1, NUMBER_OF_COLONIES-1, cast);
 
     Place p1 = Place(Coord(2, 4));
-    Fourmi f1 = Fourmi(Coord(2, 4), 2, NUMBER_OF_COLONIES-1);
+    Fourmi f1 = Fourmi(Coord(2, 4), 2, NUMBER_OF_COLONIES-1, cast);
     CHECK_THROWS_AS(p1.setFourmi(f), invalid_argument);
     p1.setSugar();
     CHECK_THROWS_AS(p1.setFourmi(f1), runtime_error);
@@ -155,13 +181,18 @@ TEST_CASE("Place fourmi"){
     CHECK_THROWS_AS(p.removeFourmi(), runtime_error);
 }
 
+TEST_CASE("Place setFourmi and nid"){
+    
+}
+
 TEST_CASE("Place replaceFourmi func"){
-    Fourmi f = Fourmi(Coord(1, 3), 1, NUMBER_OF_COLONIES-1);
+    Caste cast = Caste::ouvrier;
+    Fourmi f = Fourmi(Coord(1, 3), 1, NUMBER_OF_COLONIES-1, cast);
     Place p = Place(Coord(1, 3));
 
 
     Place p1 = Place(Coord(1, 4));
-    Fourmi f1 = Fourmi(Coord(1, 4), 2, NUMBER_OF_COLONIES-1);
+    Fourmi f1 = Fourmi(Coord(1, 4), 2, NUMBER_OF_COLONIES-1, cast);
 
     p.setFourmi(f);
 

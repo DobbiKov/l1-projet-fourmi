@@ -14,7 +14,7 @@
 void makeGameStep(FourmiEng &f_eng, Grille &g, int &game_count);
 void makeRandomMoveFourmi(Fourmi f, FourmiEng &f_eng, Grille &g);
 void makeMoveToTheNidFourmi(Fourmi f, FourmiEng &f_eng, Grille &g);
-void makeMoveToThePheroSugarFourmi(Fourmi f, FourmiEng &f_eng, Grille &g);
+void makeMoveToThePheroSugarFourmi(Fourmi f, int colony, FourmiEng &f_eng, Grille &g);
 void makeFourmiMoveToPlace(Fourmi &f, FourmiEng &f_eng, Grille &g, Place move);
 
 void makeFourmiTakeSugar(Fourmi f, FourmiEng &f_eng, Grille &g);
@@ -66,6 +66,7 @@ void draw_fourmi(sf::RenderWindow &window, int row, int column, Fourmi f, float 
     // sf::Color color = sf::Color(color_r, color_g, color_b, 255);
 
 
+
     triangle.setFillColor(
         sf::Color(color_r, color_g, color_b, 255)
     );
@@ -73,6 +74,23 @@ void draw_fourmi(sf::RenderWindow &window, int row, int column, Fourmi f, float 
 
     triangle.setOutlineThickness(0.5f);
     triangle.setOutlineColor(sf::Color::Black);
+
+    switch (f.getCaste())
+    {
+    case Caste::guerrier:
+        triangle.setRadius(scale/4);
+        triangle.setPosition(sf::Vector2f(scale*row+(scale/4), scale*column+(scale/4)));
+        triangle.setOutlineThickness(1.0f);
+        break;
+    case Caste::reproductrice:
+        triangle.setRadius(scale/2);
+        triangle.setOutlineThickness(1.0f);
+        triangle.setPointCount(6);
+        break;
+    
+    default:
+        break;
+    }
 
     window.draw(triangle);
 }
@@ -128,7 +146,10 @@ void birthNewFourmi(FourmiEng &f_eng, Grille &g, int colony){
     int idx = rand() % places.size();
     Place new_p = places[idx];
 
-    Fourmi f = Fourmi(new_p.getCoords(), 0, colony);
+    //TODO: temp, caste ouvrier
+    Caste temp_c = Caste::ouvrier;
+
+    Fourmi f = Fourmi(new_p.getCoords(), 0, colony, temp_c);
 
     Fourmi new_f = f_eng.birthFourmi(f);
 
@@ -143,14 +164,11 @@ void battleTwoFourmis(Fourmi &f1, Fourmi &f2, FourmiEng &f_eng, Grille &g){
     if(f1.porteSucre() && f2.porteSucre()) return;
     if(f1.getColony() == f2.getColony()) return;
 
-    if(!f1.porteSucre() && f2.porteSucre()){
+    if(!canCasteBattle(f2.getCaste())){
         killFourmi(f2, f_eng, g);
         return;
     }
-    if(f1.porteSucre() && !f2.porteSucre()){
-        killFourmi(f1, f_eng, g);
-        return;
-    }
+
     int rand_num = rand() % 10;
     if(rand_num >= 5){
         killFourmi(f2, f_eng, g);
@@ -169,6 +187,7 @@ void killFourmi(Fourmi &f, FourmiEng &f_eng, Grille &g){
 
 
 void makeGameStep(FourmiEng &f_eng, Grille &g, int &game_count){
+    // add sugar in random place
     if(game_count % NEW_SUGAR_APP_SPEED == 0){
         putSugarInRandomPlace(g);
     }
@@ -176,7 +195,8 @@ void makeGameStep(FourmiEng &f_eng, Grille &g, int &game_count){
     for(int i = 0; i < f_eng.getFourmiTabSize(); i++){
         Fourmi f = f_eng.loadFourmi(i);
         if(!f.isAlive()) continue;
-        if(isFourmiNeighbour(g, f.getCoords())){
+
+        if(isFourmiNeighbour(g, f.getCoords()) && canCasteBattle(f.getCaste())){
             Place p = getNeigbourFourmiPlace(g, f.getCoords());
             Fourmi f2 = f_eng.loadFourmi(p.getFourmiID());
             if(f.getColony() != f2.getColony() && f.isAlive() && f2.isAlive()){
@@ -184,6 +204,30 @@ void makeGameStep(FourmiEng &f_eng, Grille &g, int &game_count){
             }
         }
         if(!f.isAlive()) continue;
+
+        if(canCasteBattle( f.getCaste() )){
+            Place p = g.loadPlace(f.getCoords());
+            if(p.estSurUneAnyPiste()){
+                int found_colony = p.getColonyOfThePiste();
+                makeMoveToThePheroSugarFourmi(f, found_colony, f_eng, g);
+                continue;
+            }else{
+                makeRandomMoveFourmi(f, f_eng, g);
+                continue;
+            }
+        }
+
+        if(f.getCaste() == Caste::reproductrice){
+            if(g.getAmountOfSugar(f.getColony()) >= AMOUT_OF_SUGAR_FOR_NEW_FOURMI){
+                Place p = g.loadPlace(f.getCoords());
+                if(p.containNid()) continue;
+                if(isFourmiNearItsNid(f, g)){
+                    // put fourmi in the NID
+                    continue;
+                }
+                makeMoveToTheNidFourmi(f, f_eng, g);
+            }
+        }
 
         if(f.porteSucre()){
             Place p = g.loadPlace(f.getCoords());
@@ -204,7 +248,7 @@ void makeGameStep(FourmiEng &f_eng, Grille &g, int &game_count){
                 continue;
             }
             if(g.loadPlace(f.getCoords()).estSurUnePiste(f.getColony())){
-                makeMoveToThePheroSugarFourmi(f, f_eng, g);
+                makeMoveToThePheroSugarFourmi(f, f.getColony(), f_eng, g);
                 continue;
             }
             makeRandomMoveFourmi(f, f_eng, g);
@@ -247,13 +291,14 @@ void makeMoveToTheNidFourmi(Fourmi f, FourmiEng &f_eng, Grille &g){
     makeFourmiMoveToPlace(f, f_eng, g, move);
 }
 
-void makeMoveToThePheroSugarFourmi(Fourmi f, FourmiEng &f_eng, Grille &g){
+void makeMoveToThePheroSugarFourmi(Fourmi f, int colony, FourmiEng &f_eng, Grille &g){
+    verify_colony(colony);
     vector<Place> near_places = emptyPlaces( loadPlacesByCoords( g, voisines(f.getCoords()) ) );
     if(near_places.size() == 0){
         cout << "The fourmi didn't find a way to go to the sugar!" << endl;
         return;
     }
-    Place move = closestPlaceToTheSugar(near_places, f.getColony());
+    Place move = closestPlaceToTheSugar(near_places, colony);
     makeFourmiMoveToPlace(f, f_eng, g, move);  
 }
 
@@ -311,7 +356,6 @@ sf::Text create_text(float line, float column, const sf::Font &f){
 int main()
 {
     srand (time(NULL));
-    // initial grid
 
     vector<Coord> sugar_coords{{
         // Coord(2, 7),
@@ -327,8 +371,14 @@ int main()
     for(int colony = 0; colony < NUMBER_OF_COLONIES; colony++){
         EnsCoord fourmis_coords = coordsAroundNid(NIDS_COORDS[colony]);
 
+        // //TODO: temp caste 
+        // Caste temp_c = Caste::ouvrier;
+
+        int cast_devider = fourmis_coords.taille() / 3;
+        int cast = 0;
         for(int i = 0; i < fourmis_coords.taille(); i++){
-            Fourmi f = Fourmi(fourmis_coords.ieme(i), f_id_count, colony);
+            if(i > 0 && i % cast_devider == 0) cast++;
+            Fourmi f = Fourmi(fourmis_coords.ieme(i), f_id_count, colony, getCastByNumber(cast));
             fourmis.push_back(f);
             f_id_count++;
         }

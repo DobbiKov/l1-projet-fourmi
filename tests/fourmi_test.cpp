@@ -17,12 +17,14 @@ using namespace std;
 
 TEST_SUITE_BEGIN("Fourmi");
 TEST_CASE("Fourmi constructor"){
-    Fourmi f = Fourmi(Coord(1, 2), 1, NUMBER_OF_COLONIES-1);
+    Caste cast = Caste::guerrier;
+    Fourmi f = Fourmi(Coord(1, 2), 1, NUMBER_OF_COLONIES-1, cast);
     CHECK(f.getCoords() == Coord(1, 2));
     CHECK(f.getNum() == 1);
     CHECK_FALSE(f.porteSucre());
     CHECK(f.isAlive() == true);
     CHECK(f.getColony() == NUMBER_OF_COLONIES-1);
+    CHECK(f.getCaste() == cast);
 }
 
 TEST_CASE("Verify colony"){
@@ -33,7 +35,11 @@ TEST_CASE("Verify colony"){
 }
 
 TEST_CASE("Fourmi functions"){
-    Fourmi f = Fourmi(Coord(1, 2), 1, NUMBER_OF_COLONIES-1);
+    Caste cast = Caste::ouvrier;
+    Fourmi f = Fourmi(Coord(1, 2), 1, NUMBER_OF_COLONIES-1, cast);
+    Fourmi f1 = Fourmi(Coord(2, 2), 2, NUMBER_OF_COLONIES-1, Caste::guerrier);
+
+    CHECK_THROWS_AS(f1.prendSucre(), runtime_error);
 
     f.prendSucre();
     CHECK(f.porteSucre() == true);
@@ -47,6 +53,7 @@ TEST_CASE("Fourmi functions"){
 }
 
 TEST_CASE("Fourmi fourmi list"){
+    Caste cast = Caste::guerrier;
     vector<Coord> coords = vector<Coord>{{
         Coord(1, 2),
         Coord(11, 4),
@@ -54,18 +61,20 @@ TEST_CASE("Fourmi fourmi list"){
         Coord(5, 6)
     }};
     EnsCoord ens = EnsCoord(coords);
-    vector<Fourmi> list_fourmis = createListFourmis(ens, NUMBER_OF_COLONIES-1);
+    vector<Fourmi> list_fourmis = createListFourmis(ens, NUMBER_OF_COLONIES-1, cast);
     CHECK(list_fourmis.size() == coords.size());
     for(int i = 0; i < coords.size(); i++){
         CHECK(list_fourmis[i].getCoords() == coords[i]);
         CHECK(list_fourmis[i].getCoords() == ens.getCoords()[i]);
         CHECK(list_fourmis[i].getNum() == i);
         CHECK(list_fourmis[i].getColony() == NUMBER_OF_COLONIES-1);
+        CHECK(list_fourmis[i].getCaste() == cast);
     }
 }
 
 TEST_CASE("Fourmi killFourmi"){
-    Fourmi f1 = Fourmi(Coord(1, 3), 1, 1);
+    Caste cast = Caste::guerrier;
+    Fourmi f1 = Fourmi(Coord(1, 3), 1, 1, cast);
 
     CHECK(f1.isAlive());
 
@@ -77,16 +86,19 @@ TEST_CASE("Fourmi killFourmi"){
 }
 
 TEST_CASE("Fourmi operator=="){
-    Fourmi f1 = Fourmi(Coord(1, 3), 1, 1);
-    Fourmi f2 = Fourmi(Coord(1, 3), 2, 1);
-    Fourmi f3 = Fourmi(Coord(2, 4), 1, 1);
+    Fourmi f1 = Fourmi(Coord(1, 3), 1, 1, Caste::ouvrier);
+    Fourmi f2 = Fourmi(Coord(1, 3), 2, 1, Caste::ouvrier);
+    Fourmi f5 = Fourmi(Coord(1, 3), 1, 1, Caste::guerrier);
+    Fourmi f3 = Fourmi(Coord(2, 4), 1, 1, Caste::ouvrier);
 
-    Fourmi f4 = Fourmi(Coord(1, 3), 1, 1);
+    Fourmi f4 = Fourmi(Coord(1, 3), 1, 1, Caste::ouvrier);
 
     CHECK(f1 == f4);
     CHECK_FALSE(f1 == f2);
     CHECK_FALSE(f1 == f3);
     CHECK_FALSE(f2 == f3);
+
+    CHECK_FALSE(f1 == f5);
 
     CHECK_FALSE(f1 != f4);
     CHECK(f1 != f2);
@@ -96,6 +108,28 @@ TEST_CASE("Fourmi operator=="){
     f4.prendSucre();
     CHECK_FALSE(f1 == f4);
 
+}
+
+TEST_CASE("Fourmi getCastByNumber"){
+    CHECK_THROWS_AS(getCastByNumber(-1), invalid_argument);
+    CHECK_THROWS_AS(getCastByNumber(3), invalid_argument);
+    CHECK(getCastByNumber(0) == Caste::ouvrier);
+    CHECK(getCastByNumber(1) == Caste::guerrier);
+    CHECK(getCastByNumber(2) == Caste::reproductrice);
+}
+
+TEST_CASE("Fourmi canCaste"){
+    Caste c_ouvr = Caste::ouvrier;
+    Caste c_guer = Caste::guerrier;
+    Caste c_rep = Caste::reproductrice;
+
+    CHECK(canCasteTakeSugar(c_ouvr));
+    CHECK(canCasteTakeSugar(c_rep));
+    CHECK_FALSE(canCasteTakeSugar(c_guer));
+
+    CHECK(canCasteBattle(c_guer));
+    CHECK_FALSE(canCasteBattle(c_ouvr));
+    CHECK_FALSE(canCasteBattle(c_rep));
 }
 
 TEST_SUITE_END();

@@ -121,9 +121,10 @@ TEST_CASE("Grille setFourmis"){
     EnsCoord ens = EnsCoord(fourmiCoords);
     vector<Fourmi> fourmis = vector<Fourmi>();
 
+    Caste cast = Caste::ouvrier;
     for(int i = 0; i < fourmiCoords.size(); i++){
         Coord c = fourmiCoords[i];
-        Fourmi f = Fourmi(c, i, NUMBER_OF_COLONIES-1);
+        Fourmi f = Fourmi(c, i, NUMBER_OF_COLONIES-1, cast);
         fourmis.push_back(f);
     }
 
@@ -204,8 +205,9 @@ TEST_CASE("Grille initializeGrille"){
 
     EnsCoord fourmis_coords = coordsAroundNid(nid_ens);
     vector<Fourmi> fourmis{{}};
+    Caste cast = Caste::ouvrier;
     for(int i = 0; i < fourmis_coords.taille(); i++){
-        Fourmi f = Fourmi(fourmis_coords.ieme(i), i, NUMBER_OF_COLONIES-1);
+        Fourmi f = Fourmi(fourmis_coords.ieme(i), i, NUMBER_OF_COLONIES-1, cast);
         fourmis.push_back(f);
     }
 
@@ -319,7 +321,8 @@ TEST_CASE("Grille isFourmiNeighbour"){
     Coord c1 = Coord(5, 6);
     Coord c1n = Coord(5, 7);
 
-    Fourmi f = Fourmi(c1, 1, NUMBER_OF_COLONIES-1);
+    Caste cast = Caste::ouvrier;
+    Fourmi f = Fourmi(c1, 1, NUMBER_OF_COLONIES-1, cast);
 
     Coord c2 = Coord(6, 9);
 
@@ -376,7 +379,8 @@ TEST_CASE("Grille getNeigbourSugarPlace"){
     Coord c1 = Coord(5, 6);
     Coord c1n = Coord(5, 7);
 
-    Fourmi f = Fourmi(c1, 1, NUMBER_OF_COLONIES-1);
+    Caste cast = Caste::ouvrier;
+    Fourmi f = Fourmi(c1, 1, NUMBER_OF_COLONIES-1, cast);
 
     Coord c2 = Coord(6, 9);
 
@@ -396,9 +400,11 @@ TEST_CASE("Grille getNeigbourSugarPlace"){
 TEST_CASE("Grille isFourmiNearNid"){
     int colony = 1;
     int s_colony = 2;
-    Fourmi f1 = Fourmi(Coord(1, 2), 1, colony);
-    Fourmi f3 = Fourmi(Coord(4, 2), 3, colony);
-    Fourmi f2 = Fourmi(Coord(2, 2), 2, s_colony);
+
+    Caste cast = Caste::ouvrier;
+    Fourmi f1 = Fourmi(Coord(1, 2), 1, colony, cast);
+    Fourmi f3 = Fourmi(Coord(4, 2), 3, colony, cast);
+    Fourmi f2 = Fourmi(Coord(2, 2), 2, s_colony, cast);
 
     vector<Fourmi> fourmis{{f1, f2, f3}};
 

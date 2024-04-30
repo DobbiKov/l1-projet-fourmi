@@ -283,3 +283,13 @@ bool isFourmiNearItsNid(const Fourmi &f, const Grille &g){
     float phero_nid_on_the_place = g.loadPlace( f.getCoords() ).getPheroNidByColony(f.getColony());
     return float_equal(phero_nid_on_the_place, PHERO_NID_NEAR_NID);
 }
+
+// TODO: test
+int numberOfFourmiInTheNid(const Grille &g, int colony){
+    vector<Place> nid_places = loadPlacesByCoords(g, g.getNid(colony) );
+    int num = 0;
+    for(Place p : nid_places){
+        if(p.getFourmiID() != -1) num++;
+    }
+    return num;
+}

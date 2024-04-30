@@ -28,6 +28,9 @@ public:
     bool containSugar() const;
     bool containNid() const;
     bool estSurUnePiste(int colony) const;
+    bool estSurUneAnyPiste() const;
+
+    int getColonyOfThePiste() const;
 
     void setSugar();
     void removeSugar();

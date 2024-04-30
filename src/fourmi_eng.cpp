@@ -38,7 +38,7 @@ void FourmiEng::killFourmi(Fourmi &f){
 }
 Fourmi FourmiEng::birthFourmi(Fourmi f){
     int new_id = fourmis.size();
-    Fourmi new_fourmi = Fourmi(f.getCoords(), new_id, f.getColony());
+    Fourmi new_fourmi = Fourmi(f.getCoords(), new_id, f.getColony(), f.getCaste());
     fourmis.push_back(new_fourmi);
     number_of_fourmis++;
     numbers_of_fourmi_by_colony[f.getColony()]++;
