@@ -54,11 +54,14 @@ bool Place::estSurUneAnyPiste() const{
     return false;
 }
 
-int Place::getColonyOfThePiste() const{
+vector<int> Place::getColoniesOfThePiste() const{
+    vector<int> res{{}};
     for(int i = 0; i < NUMBER_OF_COLONIES; i++){
-        if(phero_sugar_by_colony[i] > 0) return i;
+        if(phero_sugar_by_colony[i] > 0) res.push_back(i);
     }
-    throw runtime_error("The place is not sur une piste!");
+    if(res.size() == 0)
+        throw runtime_error("The place is not sur une piste!");
+    return res;
 }
 
 void Place::setSugar(){

@@ -40,7 +40,7 @@ TEST_CASE("Place estSurUnePiste"){
         CHECK_FALSE(p.estSurUnePiste(i));
     }
     CHECK_FALSE(p.estSurUneAnyPiste());
-    CHECK_THROWS_AS(p.getColonyOfThePiste(), runtime_error);
+    CHECK_THROWS_AS(p.getColoniesOfThePiste(), runtime_error);
 
     int colony = 1;
     p.setPheroSugar(colony);
@@ -51,7 +51,7 @@ TEST_CASE("Place estSurUnePiste"){
         CHECK_FALSE(p.estSurUnePiste(i));
     }
     CHECK(p.estSurUneAnyPiste());
-    int c_s_p = p.getColonyOfThePiste();
+    int c_s_p = p.getColoniesOfThePiste();
     CHECK(c_s_p == colony);
 }
 

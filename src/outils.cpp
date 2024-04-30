@@ -63,3 +63,12 @@ vector<int> sort_by(vector<int> ints, vector<float> floats){
     }
     return res;
 }
+
+vector<int> get_numbers_except(vector<int> nums, int except_num){
+    vector<int> res{{}};
+    for(int num: nums){
+        if(num == except_num) continue;
+        res.push_back(num);
+    }
+    return res;
+}

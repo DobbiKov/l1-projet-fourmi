@@ -1,7 +1,7 @@
 #ifndef CONSTS_HPP
 #define CONSTS_HPP
 
-const int TAILLEGRILLE = 25;
+const int TAILLEGRILLE = 50;
 const float PHERO_NID_NEAR_NID = 1.0f - (1.0f/TAILLEGRILLE);
 
 const int AMOUNT_OF_SUGAR_TO_SET = 60;
@@ -18,7 +18,8 @@ const int NUMBER_OF_CASTES = 3;
 const int WINDOW_SIZE = 1024;
 const int grid_size = TAILLEGRILLE;
 const float scale = WINDOW_SIZE / (TAILLEGRILLE);
-const int GAME_SPEED = 5;
+const int INITIAL_GAME_SPEED = 60;
+const int GAME_SPEED_CHANGE = 5;
 const int NEW_SUGAR_APP_SPEED = 50;
 // const int NEW_SUGAR_APP_SPEED = 5;
 

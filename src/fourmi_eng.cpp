@@ -2,6 +2,7 @@
 #include <projet_fourmi/fourmi_eng.hpp>
 #include <projet_fourmi/coord.hpp>
 #include <projet_fourmi/team_consts.hpp>
+#include <projet_fourmi/grille.hpp>
 
 #include <vector>
 
@@ -43,4 +44,24 @@ Fourmi FourmiEng::birthFourmi(Fourmi f){
     number_of_fourmis++;
     numbers_of_fourmi_by_colony[f.getColony()]++;
     return new_fourmi;
+}
+
+FourmiEng initializeFourmiEng(){
+    int f_id_count = 0;
+    vector<Fourmi> fourmis{{}};
+    for(int colony = 0; colony < NUMBER_OF_COLONIES; colony++){
+        EnsCoord fourmis_coords = coordsAroundNid(NIDS_COORDS[colony]);
+
+        int cast_devider = fourmis_coords.taille() / 3;
+        int cast = 0;
+        for(int i = 0; i < fourmis_coords.taille(); i++){
+            if(i > 0 && i % cast_devider == 0) cast++;
+            Fourmi f = Fourmi(fourmis_coords.ieme(i), f_id_count, colony, getCastByNumber(cast));
+            fourmis.push_back(f);
+            f_id_count++;
+        }
+    }
+
+    FourmiEng f_eng = FourmiEng(fourmis);
+    return f_eng;
 }

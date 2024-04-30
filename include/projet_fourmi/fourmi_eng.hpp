@@ -27,4 +27,6 @@ public:
     Fourmi birthFourmi(Fourmi f);
 };
 
+FourmiEng initializeFourmiEng();
+
 #endif
