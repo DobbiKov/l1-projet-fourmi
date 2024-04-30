@@ -199,6 +199,9 @@ Place getNextRandomPlaceToGo(const Fourmi &f, const Grille &g){
     //gets all the neighbour coords, remove all non-empty places
     EnsCoord vois = voisines(f.getCoords());
     vector<Place> poss_moves = emptyPlaces(loadPlacesByCoords(g, vois));
+
+    if(poss_moves.size() == 0) throw runtime_error("There's no possible places to go!");
+
     int rand_moves_idx = rand() % poss_moves.size();
     //get the random one from the possible places
     Place move = poss_moves[rand_moves_idx];

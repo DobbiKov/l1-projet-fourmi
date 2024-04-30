@@ -16,11 +16,13 @@ const int AMOUNT_OF_INIT_RAND_SUGAR = 4;
 const int WINDOW_SIZE = 1024;
 const int grid_size = TAILLEGRILLE;
 const float scale = WINDOW_SIZE / (TAILLEGRILLE);
-const int GAME_SPEED = 120;
+const int GAME_SPEED = 500;
 const int NEW_SUGAR_APP_SPEED = 50;
+// const int NEW_SUGAR_APP_SPEED = 5;
 
 const int AMOUT_OF_SUGAR_FOR_NEW_FOURMI = AMOUNT_OF_SUGAR_TO_SET;
 const int MAX_NUMBER_OF_FOURMI_IN_COLONY = 50;
+// const int MAX_NUMBER_OF_FOURMI_IN_COLONY = 5000;
 
 
 

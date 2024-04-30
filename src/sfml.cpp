@@ -239,20 +239,33 @@ void makeFourmiPutSugar(Fourmi f, FourmiEng &f_eng, Grille &g){
 
 void makeMoveToTheNidFourmi(Fourmi f, FourmiEng &f_eng, Grille &g){
     vector<Place> near_places = emptyPlaces( loadPlacesByCoords( g, voisines(f.getCoords()) ) );
+    if(near_places.size() == 0){
+        cout << "The fourmi didn't find a way to go to the sugar!" << endl;
+        return;
+    }
     Place move = closestPlaceToTheNidByColony(near_places, f.getColony());
     makeFourmiMoveToPlace(f, f_eng, g, move);
 }
 
 void makeMoveToThePheroSugarFourmi(Fourmi f, FourmiEng &f_eng, Grille &g){
     vector<Place> near_places = emptyPlaces( loadPlacesByCoords( g, voisines(f.getCoords()) ) );
+    if(near_places.size() == 0){
+        cout << "The fourmi didn't find a way to go to the sugar!" << endl;
+        return;
+    }
     Place move = closestPlaceToTheSugar(near_places, f.getColony());
     makeFourmiMoveToPlace(f, f_eng, g, move);  
 }
 
 //makes random move for fourmi updating the state of the program
 void makeRandomMoveFourmi(Fourmi f, FourmiEng &f_eng, Grille &g){
-    Place move = getNextRandomPlaceToGo(f, g);
-    makeFourmiMoveToPlace(f, f_eng, g, move);
+    try{
+        Place move = getNextRandomPlaceToGo(f, g);
+        makeFourmiMoveToPlace(f, f_eng, g, move);
+    }catch(runtime_error e){
+        cout << "The fourmi didn't find a place to move" << endl;
+        return;
+    }
 }
 
 void makeFourmiMoveToPlace(Fourmi &f, FourmiEng &f_eng, Grille &g, Place move){
