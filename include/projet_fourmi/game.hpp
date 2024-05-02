@@ -67,4 +67,24 @@ void battleTwoFourmis(Fourmi &f1, Fourmi &f2, FourmiEng &f_eng, Grille &g);
 /// @param colony colony in which to birth fourmi
 void birthNewFourmi(FourmiEng &f_eng, Grille &g, int colony);
 
+/// @brief GameStep for a particular fourmi
+/// @param f fourmi
+/// @param f_eng fourmi engine
+/// @param g grille
+void makeGameStepForFourmi(Fourmi f, FourmiEng &f_eng, Grille &g);
+
+/// @brief Handler for sugar putting
+/// @param game_count game count 
+/// @param g grille
+void makeGameStepSugar(int game_count, Grille &g);
+
+/// @brief Handler of the part of game for fourmis
+/// @param f_eng fourmi engine
+/// @param g grille
+void makeGameStepEachFourmi(FourmiEng &f_eng, Grille &g);
+
+/// @brief Handler for fourmi birthes
+/// @param f_eng fourmi engine
+/// @param g grille
+void makeGameStepBirth(FourmiEng &f_eng, Grille &g);
 #endif

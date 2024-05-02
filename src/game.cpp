@@ -62,95 +62,116 @@ void killFourmi(Fourmi &f, FourmiEng &f_eng, Grille &g){
 
 
 void makeGameStep(FourmiEng &f_eng, Grille &g, int &game_count){
-    // add sugar in random place
-    if(game_count % NEW_SUGAR_APP_SPEED == 0){
+    makeGameStepSugar(game_count, g); // put sugar in random place
+
+    g.decreasePheroSugar(); // decrease phero sugar each game step
+
+    makeGameStepEachFourmi(f_eng, g); // handling each fourmi
+
+    makeGameStepBirth(f_eng, g); // the handle for birth of fourmis
+
+    game_count++;
+}
+
+void makeGameStepSugar(int game_count, Grille &g){
+    if(game_count % NEW_SUGAR_APP_SPEED == 0){ // add sugar in random place
         putSugarInRandomPlace(g);
     }
-    g.decreasePheroSugar(); // decrease phero sugar each game step
-    for(int i = 0; i < f_eng.getFourmiTabSize(); i++){
+}
+
+void makeGameStepEachFourmi(FourmiEng &f_eng, Grille &g){
+    for(int i = 0; i < f_eng.getFourmiTabSize(); i++){ 
         Fourmi f = f_eng.loadFourmi(i);
-        if(!f.isAlive()) continue;
-
-        if(isFourmiNeighbour(g, f.getCoords()) && canCasteBattle(f.getCaste())){ // if fourmi is near an other fourmi and they can fight
-            Place p = getNeigbourFourmiPlace(g, f.getCoords());
-            Fourmi f2 = f_eng.loadFourmi(p.getFourmiID());
-            if(f.getColony() != f2.getColony() && f.isAlive() && f2.isAlive()){
-                battleTwoFourmis(f, f2, f_eng, g);
-            }
-        }
-        if(!f.isAlive()) continue;
-
-        if(canCasteBattle( f.getCaste() )){ // if fourmi can fight and he's looking for another fourmi to kill
-            Place p = g.loadPlace(f.getCoords());
-            if(p.estSurUneAnyPiste()){ // if fourmi is sur une any piste
-                vector<int> found_colonies = get_numbers_except(p.getColoniesOfThePiste(), f.getColony());
-
-                if(found_colonies.size() == 0){ // if it's une piste of his own colony, he moves randomly
-                    makeRandomMoveFourmi(f, f_eng, g);
-                    continue;
-                }
-                // he moves along the piste of the found phero sugar
-                int chosen_colony = found_colonies[rand() % found_colonies.size()];
-                makeMoveToThePheroSugarFourmi(f, chosen_colony, f_eng, g);
-                continue;
-            }else{ // if fourmi isn't sur une any piste
-                makeRandomMoveFourmi(f, f_eng, g);
-                continue;
-            }
-        }
-
-        if(f.getCaste() == Caste::reproductrice && 
-        g.getAmountOfSugar(f.getColony()) >= AMOUT_OF_SUGAR_FOR_NEW_FOURMI){ // if fourmi is reproductive
-            // if the fourmi has to go to the fourmi cause the amount of sugar is enough to create new one
-            Place p = g.loadPlace(f.getCoords());
-            if(p.containNid()) continue;
-            if(isFourmiNearItsNid(f, g)){ // if fourmi near it's nid, he steps in
-                Place nid_place = getNeigbourNidPlace(g, f.getCoords());
-                if(nid_place.getFourmiID() == -1) makeFourmiMoveToPlace(f, f_eng, g, nid_place);
-                else makeMoveToTheNidFourmi(f, f_eng, g);
-                continue;
-            }
-            // in other case he moves towards the nid
-            makeMoveToTheNidFourmi(f, f_eng, g);
-            continue;
-        }
-
-        if(f.porteSucre()){
-            Place p = g.loadPlace(f.getCoords());
-            p.setPheroSugar(f.getColony());
-            g.changePlace(p);
-        }
-        if(f.goingToTheNid()){
-            if(isFourmiNearItsNid(f, g)){
-                makeFourmiPutSugar(f, f_eng, g);
-                continue;
-            }
-            makeMoveToTheNidFourmi(f, f_eng, g);
-            continue;
-        }
-        if(f.searchingSugar()){
-            if(isSugarNeighbour(g, f.getCoords())){
-                makeFourmiTakeSugar(f, f_eng, g);
-                continue;
-            }
-            if(g.loadPlace(f.getCoords()).estSurUnePiste(f.getColony())){
-                makeMoveToThePheroSugarFourmi(f, f.getColony(), f_eng, g);
-                continue;
-            }
-            makeRandomMoveFourmi(f, f_eng, g);
-            continue;
-        }
-        // makeRandomMoveFourmi(f, fourmis, g);
+        makeGameStepForFourmi(f, f_eng, g);
     }
+}
 
-    for(int i = 0; i < NUMBER_OF_COLONIES; i++){
-        if(g.getAmountOfSugar(i) >= AMOUT_OF_SUGAR_FOR_NEW_FOURMI 
-        && numberOfFourmiInTheNid(g, i) >= 2
-        && f_eng.getNumberOfFourmiInColony(i) < MAX_NUMBER_OF_FOURMI_IN_COLONY){
+void makeGameStepBirth(FourmiEng &f_eng, Grille &g){
+    for(int i = 0; i < NUMBER_OF_COLONIES; i++){ 
+        bool required_amount_of_sugar = g.getAmountOfSugar(i) >= AMOUT_OF_SUGAR_FOR_NEW_FOURMI;
+        bool required_number_of_fourmis = numberOfFourmiInTheNid(g, i) >= 2;
+        bool below_maximal_number_of_fourmis = f_eng.getNumberOfFourmiInColony(i) < MAX_NUMBER_OF_FOURMI_IN_COLONY;
+        
+        if( required_amount_of_sugar
+        && required_number_of_fourmis
+        && below_maximal_number_of_fourmis){
             birthNewFourmi(f_eng, g, i);
         }
     }
-    game_count++;
+}
+
+void makeGameStepForFourmi(Fourmi f, FourmiEng &f_eng, Grille &g){
+    if(!f.isAlive()) return;
+
+    if(isFourmiNeighbour(g, f.getCoords()) && canCasteBattle(f.getCaste())){ // if fourmi is near an other fourmi and they can fight
+        Place p = getNeigbourFourmiPlace(g, f.getCoords());
+        Fourmi f2 = f_eng.loadFourmi(p.getFourmiID());
+        if(f.getColony() != f2.getColony() && f.isAlive() && f2.isAlive()){
+            battleTwoFourmis(f, f2, f_eng, g);
+        }
+    }
+    if(!f.isAlive()) return;
+
+    if(canCasteBattle( f.getCaste() )){ // if fourmi can fight and he's looking for another fourmi to kill
+        Place p = g.loadPlace(f.getCoords());
+        if(p.estSurUneAnyPiste()){ // if fourmi is sur une any piste
+            vector<int> found_colonies = get_numbers_except(p.getColoniesOfThePiste(), f.getColony());
+
+            if(found_colonies.size() == 0){ // if it's une piste of his own colony, he moves randomly
+                makeRandomMoveFourmi(f, f_eng, g);
+                return;
+            }
+            // he moves along the piste of the found phero sugar
+            int chosen_colony = found_colonies[rand() % found_colonies.size()];
+            makeMoveToThePheroSugarFourmi(f, chosen_colony, f_eng, g);
+            return;
+        }else{ // if fourmi isn't sur une any piste
+            makeRandomMoveFourmi(f, f_eng, g);
+            return;
+        }
+    }
+
+    if(f.getCaste() == Caste::reproductrice && 
+    g.getAmountOfSugar(f.getColony()) >= AMOUT_OF_SUGAR_FOR_NEW_FOURMI){ // if fourmi is reproductive
+        // if the fourmi has to go to the fourmi cause the amount of sugar is enough to create new one
+        Place p = g.loadPlace(f.getCoords());
+        if(p.containNid()) return;
+        if(isFourmiNearItsNid(f, g)){ // if fourmi near it's nid, he steps in
+            Place nid_place = getNeigbourNidPlace(g, f.getCoords());
+            if(nid_place.getFourmiID() == -1) makeFourmiMoveToPlace(f, f_eng, g, nid_place);
+            else makeMoveToTheNidFourmi(f, f_eng, g);
+            return;
+        }
+        // in other case he moves towards the nid
+        makeMoveToTheNidFourmi(f, f_eng, g);
+        return;
+    }
+
+    if(f.porteSucre()){
+        Place p = g.loadPlace(f.getCoords());
+        p.setPheroSugar(f.getColony());
+        g.changePlace(p);
+    }
+    if(f.goingToTheNid()){
+        if(isFourmiNearItsNid(f, g)){
+            makeFourmiPutSugar(f, f_eng, g);
+            return;
+        }
+        makeMoveToTheNidFourmi(f, f_eng, g);
+        return;
+    }
+    if(f.searchingSugar()){
+        if(isSugarNeighbour(g, f.getCoords())){
+            makeFourmiTakeSugar(f, f_eng, g);
+            return;
+        }
+        if(g.loadPlace(f.getCoords()).estSurUnePiste(f.getColony())){
+            makeMoveToThePheroSugarFourmi(f, f.getColony(), f_eng, g);
+            return;
+        }
+        makeRandomMoveFourmi(f, f_eng, g);
+        return;
+    }
 }
 
 void makeFourmiTakeSugar(Fourmi f, FourmiEng &f_eng, Grille &g){
