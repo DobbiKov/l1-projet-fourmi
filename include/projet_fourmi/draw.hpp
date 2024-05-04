@@ -10,7 +10,7 @@ void draw_nid(sf::RenderWindow &window, int row, int column, const Place &p);
 void draw_fourmi(sf::RenderWindow &window, int row, int column, Fourmi f);
 void draw_fourmi_sugar(sf::RenderWindow &window, int row, int column, Fourmi f);
 void draw_sugar(sf::RenderWindow &window, int row, int column);
-void drawPheroNid(sf::RenderWindow &window, int row, int column, Place p);
+void drawPheroNid(sf::RenderWindow &window, int row, int column, Place p, bool show_phero_nid);
 
 class Button
 {

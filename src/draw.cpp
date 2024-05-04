@@ -13,13 +13,13 @@ void draw_phero_sugar(sf::RenderWindow &window, int row, int column, const Place
             int color_r = TEAMS_COLORS[i][0];
             int color_g = TEAMS_COLORS[i][1];
             int color_b = TEAMS_COLORS[i][2];
-            int phero_sug_alpha = (int)(p.getPheroSugar(i)*127);
+            int phero_sug_alpha = (int)(p.getPheroSugar(i));
 
             rectangle.setFillColor(sf::Color(color_r, color_g, color_b, phero_sug_alpha));
             rectangle.setPosition(sf::Vector2f(scale*row, scale*column));
 
             window.draw(rectangle);
-            break;
+            // break;
         }
     }
 }
@@ -92,10 +92,17 @@ void draw_sugar(sf::RenderWindow &window, int row, int column){
     window.draw(circle);
 }
 
-void drawPheroNid(sf::RenderWindow &window, int row, int column, Place p){
+void drawPheroNid(sf::RenderWindow &window, int row, int column, Place p, bool show_phero_nid){
     sf::RectangleShape rectangle(sf::Vector2f(scale, scale));
     rectangle.setPosition(sf::Vector2f(scale*row, scale*column));
-        
+    if(!show_phero_nid){
+        rectangle.setFillColor(sf::Color::Black);
+        rectangle.setOutlineThickness(0.5f);
+        rectangle.setOutlineColor(sf::Color(3, 3, 3, 255));
+        window.draw(rectangle);
+        return;
+    }
+    
     for(int i = 0; i < NUMBER_OF_COLONIES; i++){
         int alpha = (int)(p.getPheroNidByColony(i)*127);
         rectangle.setFillColor(sf::Color(TEAMS_COLORS[i][0], TEAMS_COLORS[i][1], TEAMS_COLORS[i][2], alpha));

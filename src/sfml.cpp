@@ -48,6 +48,7 @@ int main()
     Grille grille = initializeGrille(f_eng.getFourmis(), EnsCoord(vector<Coord>{{}}), NUMBER_OF_COLONIES);
     int GAME_COUNT = 1;
     int GAME_SPEED = INITIAL_GAME_SPEED;
+    bool show_phero_nid = INIT_SHOW_PHERO_NID;
 
 
     int WINDOW_SIZE_FOR_TEXT = 500;
@@ -66,6 +67,7 @@ int main()
 
     Button btn_speed_up((TAILLEGRILLE+15)*scale, win_coords, scale*8, scale*2, sf::Color::Blue, "Speed Up", font);
     Button btn_speed_down((TAILLEGRILLE+15)*scale, win_coords+(win_coords_step*3), scale*8, scale*2, sf::Color::Blue, "Speed Down", font);
+    Button btn_show_phero_nid((TAILLEGRILLE+15)*scale, win_coords+(win_coords_step*6), scale*8, scale*2, sf::Color::Blue, "Phero nid", font);
 
 
     sf::Text game_count_text = create_text((TAILLEGRILLE+1)*scale, win_coords, font);
@@ -118,6 +120,11 @@ int main()
                     if(GAME_SPEED < 1) GAME_SPEED = 1;
                     window.setFramerateLimit(GAME_SPEED);
                 }
+                if (btn_show_phero_nid.isMouseOver(window))
+                {
+                    // std::cout << "Speed Down!" << std::endl;
+                    show_phero_nid = !show_phero_nid;
+                }
             }
         }
 
@@ -125,7 +132,7 @@ int main()
 
         for(Place p: grille.getPlaces()){
             Coord c = p.getCoords();
-            drawPheroNid(window, c.getLine(), c.getColumn(), p);
+            drawPheroNid(window, c.getLine(), c.getColumn(), p, show_phero_nid);
             draw_phero_sugar(window, c.getLine(), c.getColumn(), p);
             if(p.isEmpty()) continue;
             if(p.containNid()) draw_nid(window, c.getLine(), c.getColumn(), p);
@@ -158,6 +165,7 @@ int main()
 
         btn_speed_down.drawTo(window);
         btn_speed_up.drawTo(window);
+        btn_show_phero_nid.drawTo(window);
 
         window.display();
     }
