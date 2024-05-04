@@ -1,4 +1,5 @@
 #include <vector>
+#include <iostream>
 #include <projet_fourmi/outils.hpp>
 #include <projet_fourmi/place.hpp>
 #include <projet_fourmi/fourmi.hpp>
@@ -55,9 +56,11 @@ bool Place::estSurUneAnyPiste() const{
 }
 
 vector<int> Place::getColoniesOfThePiste() const{
-    vector<int> res{{}};
+    vector<int> res(0);
     for(int i = 0; i < NUMBER_OF_COLONIES; i++){
-        if(phero_sugar_by_colony[i] > 0) res.push_back(i);
+        if(float_equal(getPheroSugar(i), 0.0f)) continue;
+
+        res.push_back(i);
     }
     if(res.size() == 0)
         throw runtime_error("The place is not sur une piste!");

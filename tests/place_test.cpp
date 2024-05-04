@@ -47,11 +47,14 @@ TEST_CASE("Place estSurUnePiste"){
 
     CHECK(p.estSurUnePiste(colony));
     for(int i = 0; i < NUMBER_OF_COLONIES; i++){
-        if(i == colony) continue;
+        if(i == colony){ 
+            CHECK(p.estSurUnePiste(i)); 
+            continue;
+        }
         CHECK_FALSE(p.estSurUnePiste(i));
     }
     CHECK(p.estSurUneAnyPiste());
-    int c_s_p = p.getColoniesOfThePiste();
+    int c_s_p = p.getColoniesOfThePiste()[0];
     CHECK(c_s_p == colony);
 }
 

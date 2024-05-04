@@ -92,9 +92,13 @@ EnsCoord voisines(Coord c){
     int l = c.getLine();
     int col = c.getColumn();
     for(int i = l-1; i <= l+1; i++){
+        
         if(i < 0 || i >= TAILLEGRILLE) continue;
+
         for(int j = col-1; j <= col+1; j++){
+
             if(j < 0 || j >= TAILLEGRILLE) continue;  
+
             if(i == l && j == col) continue; 
             ens.ajoute(Coord(i, j)); 
         }
