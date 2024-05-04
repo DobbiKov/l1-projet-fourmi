@@ -35,6 +35,10 @@ void draw_nid(sf::RenderWindow &window, int row, int column, const Place &p){
 
     rectangle.setPosition(sf::Vector2f(scale*row, scale*column));
 
+    rectangle.setOutlineThickness(0.5f);
+    sf::Color grey(3, 3, 3, 55);
+    rectangle.setOutlineColor(grey);
+
     window.draw(rectangle);
 }
 
@@ -98,7 +102,8 @@ void drawPheroNid(sf::RenderWindow &window, int row, int column, Place p, bool s
     if(!show_phero_nid){
         rectangle.setFillColor(sf::Color::Black);
         rectangle.setOutlineThickness(0.5f);
-        rectangle.setOutlineColor(sf::Color(3, 3, 3, 255));
+        sf::Color grey(255, 255, 255, 15);
+        rectangle.setOutlineColor(grey);
         window.draw(rectangle);
         return;
     }
