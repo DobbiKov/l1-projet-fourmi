@@ -15,6 +15,10 @@
 
 void debug_text(int num, const Fourmi &f, const Place &p);
 
+void debug_text(int num, const Fourmi &f, const Place &p){
+    cout << "Debug " << num << " " << f.getNum() << " " << f.getCoords() << " " << p.getCoords() << " " << p.getFourmiID() << endl;
+}
+
 sf::Font load_font(){
     sf::Font f; 
 
@@ -36,9 +40,6 @@ sf::Text create_text(float line, float column, const sf::Font &f){
     return text;
 }
 
-void debug_text(int num, const Fourmi &f, const Place &p){
-    cout << "Debug " << num << " " << f.getNum() << " " << f.getCoords() << " " << p.getCoords() << " " << p.getFourmiID() << endl;
-}
 
 
 int main()
