@@ -47,6 +47,7 @@ int main()
     srand (time(NULL));
     FourmiEng f_eng = initializeFourmiEng();
     Grille grille = initializeGrille(f_eng.getFourmis(), EnsCoord(vector<Coord>{{}}), NUMBER_OF_COLONIES);
+    
     int GAME_COUNT = 1;
     int GAME_SPEED = INITIAL_GAME_SPEED;
     bool show_phero_nid = INIT_SHOW_PHERO_NID;

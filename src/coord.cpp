@@ -105,3 +105,14 @@ EnsCoord voisines(Coord c){
     }
     return ens;
 }
+
+bool operator==(EnsCoord ens1, EnsCoord ens2){
+    if(ens1.taille() != ens2.taille()) return false;
+    for(int i = 0; i < ens1.taille(); i++){
+        if(ens1.ieme(i) != ens2.ieme(i)) return false;
+    }
+    return true;
+}
+bool operator!=(EnsCoord ens1, EnsCoord ens2){
+    return !(ens1 == ens2);
+}
