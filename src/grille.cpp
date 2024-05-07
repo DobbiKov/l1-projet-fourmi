@@ -77,6 +77,9 @@ void Grille::setNid(EnsCoord coords, int colony){
 }
 
 EnsCoord Grille::getNid(int colony) const{
+    verify_colony(colony);
+    if(nids.size() <= colony) throw runtime_error("The id of the colony not in the array of nids!");
+    if(nids[colony].taille() == 0) throw runtime_error("The nid is empty!");
     return nids[colony];
 }
 
@@ -284,7 +287,6 @@ bool isFourmiNearItsNid(const Fourmi &f, const Grille &g){
     return float_equal(phero_nid_on_the_place, PHERO_NID_NEAR_NID);
 }
 
-// TODO: test
 int numberOfFourmiInTheNid(const Grille &g, int colony){
     vector<Place> nid_places = loadPlacesByCoords(g, g.getNid(colony) );
     int num = 0;

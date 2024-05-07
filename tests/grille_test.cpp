@@ -482,14 +482,46 @@ TEST_CASE("Grille getMaximalNeighbourPheroNidByColony"){
     CHECK( float_equal(getMaximalNeighbourPheroNidByColony(g, p5, s_colony), 0.85f) );
 }
 
-// TODO: test 
-// int numberOfFourmiInTheNid(const Grille &g, int colony){
-//     vector<Place> nid_places = loadPlacesByCoords(g, g.getNid(colony) );
-//     int num = 0;
-//     for(Place p : nid_places){
-//         if(p.getFourmiID() != -1) num++;
-//     }
-//     return num;
-// }
+TEST_CASE("Grille numberOfFourmiInTheNid"){
+    Grille g = Grille();
+    int colony = 1;
+    CHECK_THROWS_AS(numberOfFourmiInTheNid(g, colony), runtime_error);
+
+    EnsCoord nid_coords = EnsCoord(
+        vector<Coord>{{
+            Coord(4, 5), Coord(4, 6),
+            Coord(5, 5), Coord(6, 6)
+        }}
+    );
+
+    setNid(g, nid_coords, colony);
+
+    CHECK(numberOfFourmiInTheNid(g, colony) == 0);
+
+    Fourmi f1 = Fourmi(Coord(3, 5), 0, colony, Caste::reproductrice);
+    Fourmi f2 = Fourmi(Coord(3, 6), 1, colony, Caste::ouvrier);
+
+    Place old_place_1 = g.loadPlace(f1.getCoords());
+    Place old_place_2 = g.loadPlace(f2.getCoords());
+    old_place_1.setFourmi(f1);
+    old_place_2.setFourmi(f2);
+
+    Place nid_place = g.loadPlace(Coord(4, 5));
+    CHECK_THROWS_AS(replaceFourmi(f2, old_place_2, nid_place), invalid_argument);
+
+    CHECK(old_place_1.getFourmiID() == f1.getNum());
+    
+    CHECK(nid_place.containNid());
+    CHECK(nid_place.getFourmiID() == -1);
+
+    replaceFourmi(f1, old_place_1, nid_place);
+    g.changePlace(old_place_1);
+    g.changePlace(nid_place);
+
+    CHECK_FALSE(old_place_1.getFourmiID() == f1.getNum());
+
+    CHECK(nid_place.containNid());
+    CHECK_FALSE(nid_place.getFourmiID() == -1);
+}
 
 TEST_SUITE_END();
