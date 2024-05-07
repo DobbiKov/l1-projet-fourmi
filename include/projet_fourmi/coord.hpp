@@ -47,4 +47,7 @@ ostream& operator<<(ostream& out, EnsCoord ens);
 /// @return the set of coordinates that are neighbours to the given coordinate
 EnsCoord voisines(Coord c);
 
+bool operator==(EnsCoord ens1, EnsCoord ens2);
+bool operator!=(EnsCoord ens1, EnsCoord ens2);
+
 #endif
