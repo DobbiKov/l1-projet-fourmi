@@ -21,3 +21,4 @@ using namespace std;
 #include "place_test.cpp"
 #include "grille_test.cpp"
 #include "fourmi_eng_test.cpp"
+#include "game_test.cpp"

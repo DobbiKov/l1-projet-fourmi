@@ -86,4 +86,30 @@ TEST_CASE("choixHasard"){
     EnsCoord n1 = EnsCoord();
     CHECK_THROWS_AS(n1.choixHasard(), runtime_error);
 }
+
+TEST_CASE("EnsCoord operator=="){
+    EnsCoord ens1(vector<Coord>{{
+        Coord(1, 1), Coord(1, 2), Coord(2, 9)
+    }});
+    
+    EnsCoord ens2(vector<Coord>{{
+        Coord(1, 2), Coord(1, 1), Coord(2, 9)
+    }});
+
+    EnsCoord ens3(vector<Coord>{{
+        Coord(1, 1), Coord(1, 2), Coord(2, 9), Coord(3, 9)
+    }});
+    
+    EnsCoord ens4(vector<Coord>{{
+        Coord(1, 1), Coord(1, 2), Coord(2, 9)
+    }});
+
+    CHECK(ens1 == ens4);
+    CHECK_FALSE(ens1 == ens2);
+    CHECK_FALSE(ens1 == ens3);
+
+    CHECK(ens1 != ens2);
+    CHECK(ens1 != ens3);
+    CHECK_FALSE(ens1 != ens4);
+}
 TEST_SUITE_END();
